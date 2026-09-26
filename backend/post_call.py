@@ -110,8 +110,8 @@ def summarize_models(charging: dict) -> dict:
     }
 
 
-def build_conversation(payload: dict, call: dict | None = None) -> dict:
-    """Build the stored conversation document from a post_call_transcription payload."""
+def build_conversation(payload: dict) -> dict:
+    """Build the stored conversation document from a post_call_transcription payload alone."""
     data = payload.get("data") or {}
     metadata = data.get("metadata") or {}
     analysis = data.get("analysis") or {}
@@ -135,15 +135,12 @@ def build_conversation(payload: dict, call: dict | None = None) -> dict:
             point["frustration"] = scores.get("user_frustration_score")
         timeline.append(point)
 
-    call = call or {}
-    call_variables = call.get("dynamic_variables") or {}
-
     return {
         "conversation_id": data.get("conversation_id"),
-        "call_id": str(call["_id"]) if call.get("_id") else variables.get("call_id"),
+        "call_id": variables.get("call_id"),
         "agent_id": data.get("agent_id"),
-        "scenario_name": call.get("scenario_name") or scenario_for_persona(variables.get("persona")),
-        "difficulty": str(call_variables.get("difficulty") or variables.get("difficulty") or "") or None,
+        "scenario_name": scenario_for_persona(variables.get("persona")),
+        "difficulty": str(variables.get("difficulty") or "") or None,
         "status": data.get("status"),
         "started_at": started_at,
         "duration_secs": duration,

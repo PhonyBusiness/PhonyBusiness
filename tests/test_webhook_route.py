@@ -33,7 +33,9 @@ def test_stores_conversation_and_links_call(client, mongo):
     assert response.json() == {"status": "stored", "conversation_id": "conv_test_1"}
     stored = mongo.get_conversation("conv_test_1")
     assert stored["call_id"] == call_id
-    assert stored["scenario_name"] == "tech_support"
+    # Scenario and difficulty come from the webhook, not the call record.
+    assert stored["scenario_name"] == "benefits_imposter"
+    assert stored["difficulty"] == "2"
 
     call = mongo.db["calls"].find_one()
     assert call["status"] == "ended"

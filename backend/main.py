@@ -248,9 +248,10 @@ async def post_call_webhook(request: Request) -> dict[str, str]:
     if not conversation_id:
         raise HTTPException(status_code=400, detail="Missing conversation_id")
 
-    call = mongo.find_call_for_conversation(conversation_id, dynamic_variables(data).get("call_id"))
-    conversation = build_conversation(payload, call)
+    # Dashboard data comes from the webhook alone; the call record is only marked ended.
+    conversation = build_conversation(payload)
     mongo.save_conversation(conversation)
+    call = mongo.find_call_for_conversation(conversation_id, dynamic_variables(data).get("call_id"))
     if call is not None:
         mongo.close_call_from_webhook(call["_id"], conversation)
 

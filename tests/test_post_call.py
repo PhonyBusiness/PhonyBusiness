@@ -5,8 +5,6 @@ import hmac
 import json
 from pathlib import Path
 
-from bson import ObjectId
-
 from backend.post_call import build_conversation, split_flags, verify_signature
 
 FIXTURE = Path(__file__).parent / "fixtures" / "post_call_webhook.json"
@@ -45,14 +43,19 @@ def test_timing_sentiment_latency_and_cost():
     assert conversation["usage"]["models"]["gemini-2.5-flash"] == {"input_tokens": 2217, "output_tokens": 112}
 
 
-def test_scenario_falls_back_to_persona_match_and_call_wins_when_present():
-    assert build_conversation(load_payload())["scenario_name"] == "benefits_imposter"
+def test_scenario_and_difficulty_come_from_the_webhook():
+    payload = load_payload()
+    payload["data"]["conversation_initiation_client_data"]["dynamic_variables"]["call_id"] = "abc123"
+    conversation = build_conversation(payload)
+    assert conversation["scenario_name"] == "benefits_imposter"
+    assert conversation["difficulty"] == "2"
+    assert conversation["call_id"] == "abc123"
 
-    call = {"_id": ObjectId(), "scenario_name": "tech_support", "dynamic_variables": {"difficulty": "hard"}}
-    conversation = build_conversation(load_payload(), call)
-    assert conversation["scenario_name"] == "tech_support"
-    assert conversation["difficulty"] == "hard"
-    assert conversation["call_id"] == str(call["_id"])
+
+def test_unknown_persona_leaves_scenario_empty():
+    payload = load_payload()
+    payload["data"]["conversation_initiation_client_data"]["dynamic_variables"]["persona"] = "Someone else"
+    assert build_conversation(payload)["scenario_name"] is None
 
 
 def test_split_flags_accepts_string_or_list():
