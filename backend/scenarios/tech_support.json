@@ -1,0 +1,71 @@
+{
+  "id": "tech_support",
+  "version": 1,
+  "family": "tech_support_imposter",
+  "title": "Computer security alert",
+  "contact_method": "phone",
+  "caller_id": {
+    "name": "Vantrel Security",
+    "number": "(888) 555-0162"
+  },
+  "persona": "Kevin from the Vantrel Security response team",
+  "pretext": "security alerts coming from your computer",
+  "story": "The caller claims the resident's computer has been sending security alerts and that hackers may already have access to their bank accounts. They offer to fix it remotely and sell a protection plan.",
+  "ask": "Open a remote support website, read out the six-digit session code so the technician can connect, then pay $399 for a lifetime protection plan with a card number or gift cards.",
+  "red_flags": [
+    {
+      "id": "unsolicited_call",
+      "cue": "A tech company calls out of the blue about a problem on the resident's computer."
+    },
+    {
+      "id": "threat",
+      "cue": "Hackers supposedly have access to the resident's files and bank accounts right now."
+    },
+    {
+      "id": "urgency",
+      "cue": "The computer must be fixed immediately, before more data is stolen."
+    },
+    {
+      "id": "remote_access_request",
+      "cue": "The caller wants the resident to install software or share a code so they can control the computer."
+    },
+    {
+      "id": "sensitive_info_request",
+      "cue": "The caller asks for a card number or login details."
+    },
+    {
+      "id": "unusual_payment",
+      "cue": "The caller asks to be paid for 'protection' with gift cards or over the phone."
+    }
+  ],
+  "stages": {
+    "hook": "Confirm you're speaking to {{first_name}}, say you're with Vantrel Security, and that their computer has been sending critical security alerts to your servers.",
+    "build_trust": "Sound technical and helpful. Describe generic 'warnings' (slow computer, pop-ups, strange emails) and ask whether they've noticed any, then treat any yes as proof.",
+    "ask": "Direct them to a remote support website and ask them to read the six-digit session code so you can connect and remove the threat. Then explain the $399 lifetime protection plan.",
+    "pressure": "Say you can see hackers connected right now and their bank accounts are exposed. If they hang up, the connection breaks and the damage continues.",
+    "close": "Take payment for the protection plan by card number read over the phone or by gift cards."
+  },
+  "fake_credentials": {
+    "employee_id": "VS-2291",
+    "ticket_number": "SEC-58820",
+    "callback_number": "(888) 555-0162"
+  },
+  "disclosure_triggers": [
+    "starts reading a remote session code",
+    "agrees to install software or visit a website the caller gives",
+    "starts reading a card number, expiration date, or security code",
+    "agrees to buy gift cards or pay for the plan",
+    "shares a password or login"
+  ],
+  "pass_signals": [
+    "says real tech companies don't call about problems on their computer",
+    "refuses to install anything or give anyone access to the computer",
+    "says they'll have a trusted person or local shop check the computer",
+    "hangs up"
+  ],
+  "difficulty": {
+    "easy": "Asks for remote access within the first few turns, sounds scripted, and gives up after one firm refusal.",
+    "medium": "Spends a few turns describing 'symptoms' before the ask. Answers one objection with the employee ID and ticket number before accepting a refusal.",
+    "hard": "Calm and knowledgeable. Offers the callback number and a 'refund' if unhappy, suggests the resident can uninstall the software afterward, and switches to a refund-overpayment story if the resident refuses to pay. Only accepts a clear, repeated refusal or a hang-up."
+  }
+}

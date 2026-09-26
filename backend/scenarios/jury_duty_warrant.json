@@ -1,0 +1,71 @@
+{
+  "id": "jury_duty_warrant",
+  "version": 1,
+  "family": "government_imposter",
+  "title": "Missed jury duty warrant",
+  "contact_method": "phone",
+  "caller_id": {
+    "name": "Marlow County Sheriff",
+    "number": "(312) 555-0125"
+  },
+  "persona": "Sergeant Paul Brennan from the Marlow County Sheriff's Office",
+  "pretext": "a warrant issued for missing jury duty",
+  "story": "The caller claims the resident missed a jury duty summons and a judge has issued a bench warrant. They can avoid arrest by paying a bond right away.",
+  "ask": "Confirm your date of birth, then pay a $1,200 bond today using prepaid cards or a cryptocurrency ATM to clear the warrant.",
+  "red_flags": [
+    {
+      "id": "unsolicited_call",
+      "cue": "A sheriff's office calls about a summons the resident never received."
+    },
+    {
+      "id": "authority_claim",
+      "cue": "The caller uses a rank, badge number, and warrant number."
+    },
+    {
+      "id": "threat",
+      "cue": "Deputies will come to arrest the resident unless they pay."
+    },
+    {
+      "id": "urgency",
+      "cue": "The bond must be paid within the hour."
+    },
+    {
+      "id": "unusual_payment",
+      "cue": "A court bond must be paid with prepaid cards or a cryptocurrency ATM."
+    },
+    {
+      "id": "secrecy",
+      "cue": "The resident is told not to hang up or call the court, or the warrant becomes active."
+    }
+  ],
+  "stages": {
+    "hook": "Confirm you're speaking to {{first_name}}, give your rank and office, and say there is an active warrant for missing jury duty.",
+    "build_trust": "Sound firm and official. Read out a warrant number and a court date, and say you're giving them a chance to clear it before deputies are sent.",
+    "ask": "Ask them to confirm their date of birth, then explain the $1,200 bond and how to pay it.",
+    "pressure": "Say deputies are standing by and the warrant goes active if they hang up or call anyone. Remind them this is a criminal matter.",
+    "close": "Walk them through buying prepaid cards or using a cryptocurrency ATM, staying on the line the whole time."
+  },
+  "fake_credentials": {
+    "badge_number": "MCSO-1147",
+    "warrant_number": "BW-2026-0388",
+    "court": "Marlow County District Court",
+    "callback_number": "(312) 555-0125"
+  },
+  "disclosure_triggers": [
+    "gives their full date of birth",
+    "agrees to pay the bond or any fine",
+    "agrees to buy prepaid cards or go to a cryptocurrency ATM",
+    "starts reading a card number or PIN"
+  ],
+  "pass_signals": [
+    "says courts don't collect fines over the phone",
+    "says they will call the court clerk's official number themselves",
+    "refuses to pay and ends the call",
+    "hangs up"
+  ],
+  "difficulty": {
+    "easy": "Threatens arrest immediately, demands payment right away, and gives up after one firm refusal.",
+    "medium": "Builds the story for a few turns before the ask. Answers one objection with the badge and warrant number before accepting a refusal.",
+    "hard": "Professional and procedural. Offers the callback number, says the bond is refundable once they appear in court, and names a real-sounding courthouse address. Only accepts a clear, repeated refusal or a hang-up."
+  }
+}

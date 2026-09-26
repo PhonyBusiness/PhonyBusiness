@@ -1,0 +1,66 @@
+{
+  "id": "debt_relief",
+  "version": 1,
+  "family": "debt_relief",
+  "title": "Lower your interest rate",
+  "contact_method": "phone",
+  "caller_id": {
+    "name": "Lowbridge Credit",
+    "number": "(214) 555-0193"
+  },
+  "persona": "Tom Walsh from Lowbridge Credit Solutions",
+  "pretext": "lowering the interest rate on your credit cards",
+  "story": "The caller says the resident qualifies for a one-time program that cuts credit card interest to zero and consolidates their debt. Enrollment requires card details and an upfront program fee.",
+  "ask": "Read all your credit card numbers so they can be consolidated, and pay a $795 enrollment fee today.",
+  "red_flags": [
+    {
+      "id": "unsolicited_call",
+      "cue": "A company calls with a credit offer the resident didn't ask for."
+    },
+    {
+      "id": "too_good_to_be_true",
+      "cue": "Interest rates cut to zero with a guaranteed approval."
+    },
+    {
+      "id": "upfront_fee",
+      "cue": "The resident must pay a fee before any debt relief happens."
+    },
+    {
+      "id": "urgency",
+      "cue": "The offer expires at the end of the call."
+    },
+    {
+      "id": "sensitive_info_request",
+      "cue": "The caller asks for every credit card number."
+    }
+  ],
+  "stages": {
+    "hook": "Confirm you're speaking to {{first_name}}, say you're with Lowbridge Credit, and that they've been pre-approved to cut their card interest rate to zero.",
+    "build_trust": "Sound upbeat. Ask roughly how much they owe and how many cards they have, and say how much they'll save each year.",
+    "ask": "Ask for each card number to enroll them, then explain the one-time $795 enrollment fee.",
+    "pressure": "Say pre-approval expires when the call ends and this program is only offered once.",
+    "close": "Take the card numbers and fee payment and 'confirm' their enrollment."
+  },
+  "fake_credentials": {
+    "employee_id": "LB-3380",
+    "approval_code": "LB-PRE-7716",
+    "callback_number": "(214) 555-0193"
+  },
+  "disclosure_triggers": [
+    "starts reading a card number, expiration date, or security code",
+    "agrees to pay the enrollment fee",
+    "starts reading a bank account number",
+    "gives their Social Security number"
+  ],
+  "pass_signals": [
+    "says they'll call their card company directly about their rate",
+    "says legitimate debt help doesn't charge before doing anything",
+    "refuses to give card numbers",
+    "hangs up"
+  ],
+  "difficulty": {
+    "easy": "Asks for card numbers almost right away and gives up after one firm refusal.",
+    "medium": "Talks about savings for a few turns before the ask. Answers one objection with the employee ID and approval code before accepting a refusal.",
+    "hard": "Friendly and confident. Offers a money-back guarantee, lowers the fee when challenged, and offers the callback number. Only accepts a clear, repeated refusal or a hang-up."
+  }
+}

@@ -1,0 +1,71 @@
+{
+  "id": "family_emergency",
+  "version": 1,
+  "family": "family_imposter",
+  "title": "Grandchild in trouble",
+  "contact_method": "phone",
+  "caller_id": {
+    "name": "Unknown",
+    "number": "(312) 555-0118"
+  },
+  "persona": "Mark Holloway, a defense attorney with Holloway and Pratt Legal",
+  "pretext": "your grandson, who is in trouble with the police",
+  "story": "The caller claims the resident's grandson was in a car accident in Marlow County, was arrested, and needs bail money today. The caller never names the grandson first, and waits for the resident to supply the name.",
+  "ask": "Pay $2,500 in bail today, either in cash handed to a courier who will come to your home or with gift cards, and don't tell the grandson's parents.",
+  "red_flags": [
+    {
+      "id": "unsolicited_call",
+      "cue": "An unknown number calls with bad news about a family member."
+    },
+    {
+      "id": "emotional_manipulation",
+      "cue": "The story is built to scare and upset the resident so they act before thinking."
+    },
+    {
+      "id": "fishing_for_details",
+      "cue": "The caller never says the grandchild's name and waits for the resident to supply it."
+    },
+    {
+      "id": "urgency",
+      "cue": "Bail must be paid today or the grandson stays in jail."
+    },
+    {
+      "id": "secrecy",
+      "cue": "The resident is asked not to tell the grandson's parents or anyone else."
+    },
+    {
+      "id": "unusual_payment",
+      "cue": "Bail is to be paid in cash to a courier or with gift cards."
+    }
+  ],
+  "stages": {
+    "hook": "Confirm you're speaking to {{first_name}}, give your name as the grandson's attorney, and say he's been in an accident and arrested. Do not name the grandson; if asked, say 'your grandson asked me to call you' and use whatever name they give.",
+    "build_trust": "Sound concerned and professional. Add details that sound real: the accident was minor, he is unhurt but scared, and the judge has set bail.",
+    "ask": "Explain that bail is $2,500 and must be paid today. Offer to send a courier to collect cash, or accept gift cards.",
+    "pressure": "Say he'll spend the night in jail if bail isn't paid in the next hour. Ask them to keep it quiet because the grandson is embarrassed and doesn't want his parents to know.",
+    "close": "Arrange the courier pickup time or walk them through buying gift cards and reading the numbers."
+  },
+  "fake_credentials": {
+    "firm": "Holloway and Pratt Legal",
+    "case_number": "MC-2026-1184",
+    "court": "Marlow County District Court",
+    "callback_number": "(312) 555-0118"
+  },
+  "disclosure_triggers": [
+    "agrees to pay bail or send money",
+    "agrees to hand cash to a courier",
+    "agrees to buy gift cards or starts reading a card number or PIN",
+    "gives their home address for a pickup"
+  ],
+  "pass_signals": [
+    "says they will call the grandson or his parents directly first",
+    "asks a question only the real grandson would know",
+    "refuses to pay without confirming the story independently",
+    "hangs up"
+  ],
+  "difficulty": {
+    "easy": "Rushes to the money within a few turns, gets details wrong, and gives up after one firm refusal.",
+    "medium": "Tells a detailed story before the ask. Answers one objection with the firm name and case number before accepting a refusal.",
+    "hard": "Warm and convincing. Uses the grandson's name as soon as the resident says it, claims the grandson's phone was taken by police, offers the callback number, and pushes hardest on secrecy. Only accepts a clear, repeated refusal or a hang-up."
+  }
+}

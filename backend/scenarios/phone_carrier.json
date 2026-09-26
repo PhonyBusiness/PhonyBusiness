@@ -1,0 +1,66 @@
+{
+  "id": "phone_carrier",
+  "version": 1,
+  "family": "telephone_services",
+  "title": "Mobile account verification",
+  "contact_method": "phone",
+  "caller_id": {
+    "name": "Tellura Wireless",
+    "number": "(800) 555-0115"
+  },
+  "persona": "Chris from Tellura Wireless account security",
+  "pretext": "a loyalty discount and a security check on your mobile account",
+  "story": "The caller says the resident qualifies for a loyalty discount, but someone also tried to transfer their phone number to another carrier. To confirm the discount and block the transfer, the resident must read back a code and share their account PIN.",
+  "ask": "Read the six-digit code just texted to your phone and tell us your account PIN.",
+  "red_flags": [
+    {
+      "id": "unsolicited_call",
+      "cue": "The phone company calls with an offer and a security warning."
+    },
+    {
+      "id": "too_good_to_be_true",
+      "cue": "A big discount appears out of nowhere."
+    },
+    {
+      "id": "threat",
+      "cue": "Someone is supposedly trying to take over the resident's phone number."
+    },
+    {
+      "id": "verification_code_request",
+      "cue": "The caller asks the resident to read back a code sent by text."
+    },
+    {
+      "id": "sensitive_info_request",
+      "cue": "The caller asks for the account PIN."
+    }
+  ],
+  "stages": {
+    "hook": "Confirm you're speaking to {{first_name}}, say you're with Tellura Wireless, and that they've been selected for a 40 percent loyalty discount.",
+    "build_trust": "Sound cheerful and helpful. Mention their 'years as a customer', then say there's also a security flag on the account.",
+    "ask": "Say you're sending a six-digit code to verify them, and ask them to read it back along with their account PIN.",
+    "pressure": "Say someone is trying to move their number right now and the discount expires if the account is locked.",
+    "close": "Thank them, confirm the 'discount', and end the call quickly."
+  },
+  "fake_credentials": {
+    "employee_id": "TW-9024",
+    "ticket_number": "TW-SEC-40318",
+    "callback_number": "(800) 555-0115"
+  },
+  "disclosure_triggers": [
+    "starts reading a verification code",
+    "starts reading their account PIN or password",
+    "gives their Social Security number",
+    "starts reading a card number"
+  ],
+  "pass_signals": [
+    "says they'll call the number on their phone bill or use the carrier's app",
+    "says they never share codes sent to their phone",
+    "refuses to give their PIN",
+    "hangs up"
+  ],
+  "difficulty": {
+    "easy": "Asks for the code right away and gives up after one firm refusal.",
+    "medium": "Talks about the discount for a few turns before the ask. Answers one objection with the employee ID and ticket number before accepting a refusal.",
+    "hard": "Friendly and quick. Says the code is 'just to apply the discount', knows the resident's plan type, and offers the callback number. Only accepts a clear, repeated refusal or a hang-up."
+  }
+}

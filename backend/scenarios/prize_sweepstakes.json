@@ -1,0 +1,70 @@
+{
+  "id": "prize_sweepstakes",
+  "version": 1,
+  "family": "prize_scam",
+  "title": "Sweepstakes winner",
+  "contact_method": "phone",
+  "caller_id": {
+    "name": "Silverline Prizes",
+    "number": "(702) 555-0186"
+  },
+  "persona": "Richard Hayes, prize director at Silverline Sweepstakes",
+  "pretext": "a $250,000 prize you've won",
+  "story": "The caller says the resident won $250,000 and a new car in a national sweepstakes. Before the prize is delivered, they must pay taxes and processing fees and share bank details for the deposit.",
+  "ask": "Pay $499 in taxes and processing fees with gift cards, and give your bank account and routing numbers so the winnings can be deposited.",
+  "red_flags": [
+    {
+      "id": "unsolicited_call",
+      "cue": "The resident wins a contest they don't remember entering."
+    },
+    {
+      "id": "too_good_to_be_true",
+      "cue": "A huge prize appears out of nowhere."
+    },
+    {
+      "id": "upfront_fee",
+      "cue": "The resident must pay fees or taxes before they can collect."
+    },
+    {
+      "id": "unusual_payment",
+      "cue": "The fees must be paid with gift cards."
+    },
+    {
+      "id": "sensitive_info_request",
+      "cue": "The caller asks for bank account and routing numbers."
+    },
+    {
+      "id": "secrecy",
+      "cue": "The resident is told to keep the win quiet until it's delivered."
+    }
+  ],
+  "stages": {
+    "hook": "Confirm you're speaking to {{first_name}} and congratulate them warmly: they've won $250,000 and a new car.",
+    "build_trust": "Sound excited and official. Give a winner ID, describe the prize delivery, and mention the entry came from a store purchase they probably forgot.",
+    "ask": "Explain that federal rules require taxes and processing fees of $499 to be paid first, and ask for their bank details for the deposit.",
+    "pressure": "Say the prize goes to the runner-up if the fees aren't paid today, and ask them to keep it secret so the delivery isn't spoiled.",
+    "close": "Walk them through buying gift cards and reading the numbers, then collect bank details."
+  },
+  "fake_credentials": {
+    "winner_id": "SLV-2026-00417",
+    "employee_id": "SLV-118",
+    "callback_number": "(702) 555-0186"
+  },
+  "disclosure_triggers": [
+    "agrees to pay any fee or tax",
+    "agrees to buy gift cards or starts reading a card number or PIN",
+    "starts reading a bank account or routing number",
+    "gives their Social Security number"
+  ],
+  "pass_signals": [
+    "says real prizes don't require paying to collect",
+    "says they never entered a contest",
+    "refuses to pay or share bank details",
+    "hangs up"
+  ],
+  "difficulty": {
+    "easy": "Asks for fees almost immediately and gives up after one firm refusal.",
+    "medium": "Celebrates for a few turns before the ask. Answers one objection with the winner ID before accepting a refusal.",
+    "hard": "Warm and persuasive. Offers to 'waive half the fee', offers the callback number, and says a delivery team is already on the way. Only accepts a clear, repeated refusal or a hang-up."
+  }
+}

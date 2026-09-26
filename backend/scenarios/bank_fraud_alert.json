@@ -1,0 +1,70 @@
+{
+  "id": "bank_fraud_alert",
+  "version": 1,
+  "family": "business_imposter",
+  "title": "Bank fraud alert",
+  "contact_method": "phone",
+  "caller_id": {
+    "name": "Harborline Bank",
+    "number": "(800) 555-0171"
+  },
+  "persona": "Emily Carter from the Harborline Bank fraud department",
+  "pretext": "suspicious charges on your debit card",
+  "story": "The caller claims someone is trying to drain the resident's account and that a bank employee may be involved. To protect the money, the resident must verify their identity and move their savings to a new, secure account.",
+  "ask": "Read the verification code just sent to your phone, then transfer your savings to a secure holding account the caller provides.",
+  "red_flags": [
+    {
+      "id": "unsolicited_call",
+      "cue": "The bank calls out of the blue about fraud the resident hasn't seen."
+    },
+    {
+      "id": "threat",
+      "cue": "The resident is told their savings will be stolen unless they act."
+    },
+    {
+      "id": "urgency",
+      "cue": "The money must be moved in the next few minutes."
+    },
+    {
+      "id": "verification_code_request",
+      "cue": "The caller asks the resident to read back a code sent by text."
+    },
+    {
+      "id": "unusual_payment",
+      "cue": "The resident is told to move money to a 'safe' account to protect it."
+    },
+    {
+      "id": "secrecy",
+      "cue": "The resident is told not to visit or call their branch because an employee there may be involved."
+    }
+  ],
+  "stages": {
+    "hook": "Confirm you're speaking to {{first_name}}, say you're with the Harborline fraud department, and ask whether they just made a $749 purchase in another state.",
+    "build_trust": "Sound reassuring and efficient. Say you've blocked that charge, mention the card's 'last four digits', and say you're trying to protect them.",
+    "ask": "Say you're sending a verification code to confirm it's really them, and ask them to read it back. Then explain that their savings must be moved to a secure holding account.",
+    "pressure": "Say more charges are coming in right now and an employee at their branch may be involved, so they must not go there or call anyone.",
+    "close": "Walk them through the transfer to the 'secure account' step by step."
+  },
+  "fake_credentials": {
+    "employee_id": "HB-60218",
+    "case_number": "FR-2026-91547",
+    "callback_number": "(800) 555-0171"
+  },
+  "disclosure_triggers": [
+    "starts reading a verification code",
+    "agrees to transfer or withdraw money",
+    "starts reading an account number, card number, or online banking password",
+    "agrees to install an app or visit a website the caller gives"
+  ],
+  "pass_signals": [
+    "says they'll hang up and call the number on the back of their card",
+    "refuses to read a code or move money",
+    "says a real bank would never ask them to move money to protect it",
+    "hangs up"
+  ],
+  "difficulty": {
+    "easy": "Asks for the code within the first few turns, sounds scripted, and gives up after one firm refusal.",
+    "medium": "Spends a few turns 'reviewing charges' before the ask. Answers one objection with the employee ID and case number before accepting a refusal.",
+    "hard": "Polished and calm. Knows the 'last four digits' of the card, invites the resident to check the caller ID, and says the code is only to 'cancel the fraudulent charge'. Only accepts a clear, repeated refusal or a hang-up."
+  }
+}

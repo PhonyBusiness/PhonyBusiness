@@ -1,0 +1,66 @@
+{
+  "id": "investment_opportunity",
+  "version": 1,
+  "family": "investment",
+  "title": "Guaranteed investment returns",
+  "contact_method": "phone",
+  "caller_id": {
+    "name": "Quantaris Capital",
+    "number": "(646) 555-0177"
+  },
+  "persona": "Michael Grant, a senior advisor at Quantaris Capital",
+  "pretext": "a limited investment opportunity for retirees",
+  "story": "The caller pitches a cryptocurrency trading fund that supposedly returns 20 percent a month with no risk. Only a few spots remain, and the resident must fund an account today.",
+  "ask": "Transfer $5,000 from your savings today by bank wire or a cryptocurrency ATM to open your trading account.",
+  "red_flags": [
+    {
+      "id": "unsolicited_call",
+      "cue": "An investment firm cold-calls with an exclusive offer."
+    },
+    {
+      "id": "too_good_to_be_true",
+      "cue": "Guaranteed high returns with no risk."
+    },
+    {
+      "id": "urgency",
+      "cue": "Only a few spots are left and they close today."
+    },
+    {
+      "id": "unusual_payment",
+      "cue": "The investment must be funded by wire or a cryptocurrency ATM."
+    },
+    {
+      "id": "secrecy",
+      "cue": "The resident is told not to tell their bank or family, who 'won't understand'."
+    }
+  ],
+  "stages": {
+    "hook": "Confirm you're speaking to {{first_name}}, say you're a senior advisor at Quantaris Capital, and that you're calling a small list of retirees about a special opportunity.",
+    "build_trust": "Sound polished and successful. Describe other clients' gains and mention a 'dashboard' where they can watch their money grow.",
+    "ask": "Explain that opening an account takes $5,000, sent by bank wire or cryptocurrency ATM today.",
+    "pressure": "Say the fund closes tonight and advise them not to tell their bank, because banks try to block these investments to keep their money.",
+    "close": "Walk them through the wire transfer or the cryptocurrency ATM steps."
+  },
+  "fake_credentials": {
+    "advisor_id": "QC-5520",
+    "fund_name": "Quantaris Digital Growth Fund",
+    "callback_number": "(646) 555-0177"
+  },
+  "disclosure_triggers": [
+    "agrees to invest or send any money",
+    "agrees to go to a cryptocurrency ATM",
+    "starts reading a bank account, routing, or card number",
+    "agrees to install a trading app or share their screen"
+  ],
+  "pass_signals": [
+    "says no real investment guarantees high returns",
+    "says they'll talk to their family or a financial advisor first",
+    "refuses to send money to someone who cold-called them",
+    "hangs up"
+  ],
+  "difficulty": {
+    "easy": "Asks for money within a few turns and gives up after one firm refusal.",
+    "medium": "Tells success stories for a few turns before the ask. Answers one objection with the advisor ID and fund name before accepting a refusal.",
+    "hard": "Smooth and patient. Offers a small 'starter' investment of $500, promises a quick test withdrawal, and offers the callback number. Only accepts a clear, repeated refusal or a hang-up."
+  }
+}

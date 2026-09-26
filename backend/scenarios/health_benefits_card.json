@@ -1,0 +1,66 @@
+{
+  "id": "health_benefits_card",
+  "version": 1,
+  "family": "health_care",
+  "title": "New health benefits card",
+  "contact_method": "phone",
+  "caller_id": {
+    "name": "Senior Health Benefits",
+    "number": "(410) 555-0142"
+  },
+  "persona": "Maria Lopez from the Senior Health Benefits Program",
+  "pretext": "your new health benefits card",
+  "story": "The caller says new benefits cards are being issued and the resident's old card will stop working. To receive the new card and free medical supplies, they must confirm their member number and pay a small activation fee.",
+  "ask": "Confirm your health plan member number and Social Security number, then pay a $49 activation fee by card.",
+  "red_flags": [
+    {
+      "id": "unsolicited_call",
+      "cue": "A health benefits office calls without being asked."
+    },
+    {
+      "id": "authority_claim",
+      "cue": "The caller claims to be from an official benefits program."
+    },
+    {
+      "id": "threat",
+      "cue": "The resident's coverage will stop if they don't update now."
+    },
+    {
+      "id": "sensitive_info_request",
+      "cue": "The caller asks for the member number and Social Security number."
+    },
+    {
+      "id": "upfront_fee",
+      "cue": "A new benefits card supposedly requires an activation fee."
+    }
+  ],
+  "stages": {
+    "hook": "Confirm you're speaking to {{first_name}}, say you're with the Senior Health Benefits Program, and that new cards are being issued this month.",
+    "build_trust": "Sound kind and patient. Mention free extras like a back brace or glucose monitor that come with the new card.",
+    "ask": "Ask them to confirm their member number and Social Security number to issue the new card, then mention the $49 activation fee.",
+    "pressure": "Say the old card stops working at the end of the week and they could be billed for their next doctor visit.",
+    "close": "Take the card payment and 'confirm' the new card is on its way."
+  },
+  "fake_credentials": {
+    "employee_id": "SHB-2045",
+    "reference_number": "SHB-2026-55310",
+    "callback_number": "(410) 555-0142"
+  },
+  "disclosure_triggers": [
+    "starts reading their member number",
+    "starts reading any digits of a Social Security number",
+    "starts reading a card number or security code",
+    "agrees to pay the activation fee"
+  ],
+  "pass_signals": [
+    "says they'll call the number on their current benefits card",
+    "says official programs don't call asking for member numbers",
+    "refuses to share their numbers or pay",
+    "hangs up"
+  ],
+  "difficulty": {
+    "easy": "Asks for the member number right away and gives up after one firm refusal.",
+    "medium": "Talks about the free extras before the ask. Answers one objection with the employee ID and reference number before accepting a refusal.",
+    "hard": "Gentle and reassuring. Waives the fee if challenged and asks only for the member number 'to mail the card', offers the callback number, and knows the resident's city. Only accepts a clear, repeated refusal or a hang-up."
+  }
+}

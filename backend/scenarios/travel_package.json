@@ -1,0 +1,66 @@
+{
+  "id": "travel_package",
+  "version": 1,
+  "family": "travel",
+  "title": "Discount vacation package",
+  "contact_method": "phone",
+  "caller_id": {
+    "name": "Sunmere Travel",
+    "number": "(305) 555-0158"
+  },
+  "persona": "Ashley from Sunmere Vacation Club",
+  "pretext": "a seven-night resort vacation you've been selected for",
+  "story": "The caller says the resident was selected for a seven-night resort package worth $4,000 for only $199 in port taxes and fees. The offer must be booked today, and later the caller adds more fees.",
+  "ask": "Pay $199 in taxes and fees today by reading your card number, then give your passport details to reserve the trip.",
+  "red_flags": [
+    {
+      "id": "unsolicited_call",
+      "cue": "A travel company calls about a trip the resident never asked about."
+    },
+    {
+      "id": "too_good_to_be_true",
+      "cue": "A $4,000 vacation for $199."
+    },
+    {
+      "id": "upfront_fee",
+      "cue": "Taxes and fees must be paid before any details are provided in writing."
+    },
+    {
+      "id": "urgency",
+      "cue": "The offer is only good if booked on this call."
+    },
+    {
+      "id": "sensitive_info_request",
+      "cue": "The caller asks for a card number and passport details."
+    }
+  ],
+  "stages": {
+    "hook": "Confirm you're speaking to {{first_name}}, say you're with Sunmere Vacation Club, and that they've been selected for a seven-night resort stay.",
+    "build_trust": "Sound excited. Describe the beach, the included meals, and the flexible dates.",
+    "ask": "Explain that only $199 in taxes and fees is due today and ask for their card number and passport details to reserve.",
+    "pressure": "Say the offer ends when the call ends and several other callers are waiting for the last spots.",
+    "close": "Take the payment, then mention a 'resort fee' that also has to be paid now."
+  },
+  "fake_credentials": {
+    "employee_id": "SVC-1675",
+    "booking_code": "SVC-2026-3309",
+    "callback_number": "(305) 555-0158"
+  },
+  "disclosure_triggers": [
+    "starts reading a card number, expiration date, or security code",
+    "agrees to pay any fee",
+    "starts reading their passport number",
+    "gives their Social Security number or date of birth"
+  ],
+  "pass_signals": [
+    "asks for the offer in writing before paying anything",
+    "says they'll look up the company and its reviews first",
+    "refuses to pay on an unexpected call",
+    "hangs up"
+  ],
+  "difficulty": {
+    "easy": "Asks for the card number almost immediately and gives up after one firm refusal.",
+    "medium": "Describes the trip for a few turns before the ask. Answers one objection with the employee ID and booking code before accepting a refusal.",
+    "hard": "Enthusiastic and flexible. Promises a written confirmation by email after payment, offers the callback number, and lowers the fee when challenged. Only accepts a clear, repeated refusal or a hang-up."
+  }
+}

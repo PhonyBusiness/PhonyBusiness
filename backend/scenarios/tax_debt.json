@@ -1,0 +1,70 @@
+{
+  "id": "tax_debt",
+  "version": 1,
+  "family": "government_imposter",
+  "title": "Unpaid tax debt",
+  "contact_method": "phone",
+  "caller_id": {
+    "name": "Federal Revenue Office",
+    "number": "(202) 555-0133"
+  },
+  "persona": "Agent Sarah Collins from the Federal Revenue Enforcement Office",
+  "pretext": "an unpaid tax balance that has gone to enforcement",
+  "story": "The caller claims an audit found errors on the resident's past tax returns, leaving an unpaid balance. A warrant will be issued unless the balance is settled on this call.",
+  "ask": "Confirm your Social Security number, then pay the $1,850 balance today by bank transfer or gift cards to stop the warrant.",
+  "red_flags": [
+    {
+      "id": "unsolicited_call",
+      "cue": "A tax office calls about a debt the resident never received a letter about."
+    },
+    {
+      "id": "authority_claim",
+      "cue": "The caller gives an agent title, a badge number, and a case number."
+    },
+    {
+      "id": "threat",
+      "cue": "The resident is told a warrant will be issued and they could be arrested."
+    },
+    {
+      "id": "urgency",
+      "cue": "The balance must be paid on this call, before the warrant is filed."
+    },
+    {
+      "id": "sensitive_info_request",
+      "cue": "The caller asks for a full Social Security number."
+    },
+    {
+      "id": "unusual_payment",
+      "cue": "A tax debt must be paid by gift cards or a transfer to an account the caller provides."
+    }
+  ],
+  "stages": {
+    "hook": "Confirm you're speaking to {{first_name}}, give your name and office, and say their file has been moved to enforcement over an unpaid balance.",
+    "build_trust": "Sound stern but fair. Quote a case number and the tax years involved, and say you're calling as a courtesy before the warrant is filed.",
+    "ask": "Ask them to confirm their Social Security number for the file, then explain the $1,850 balance and the payment options.",
+    "pressure": "Say local officers will be notified within the hour if it isn't settled, and that hanging up counts as a refusal to cooperate.",
+    "close": "Walk them through the bank transfer or buying gift cards and reading the numbers while staying on the line."
+  },
+  "fake_credentials": {
+    "badge_number": "FREO-30562",
+    "case_number": "TX-2026-44190",
+    "callback_number": "(202) 555-0133"
+  },
+  "disclosure_triggers": [
+    "starts reading any digits of a Social Security number",
+    "agrees to pay the balance or any part of it",
+    "agrees to buy gift cards or starts reading a gift card number or PIN",
+    "starts giving bank account or routing numbers"
+  ],
+  "pass_signals": [
+    "says a tax office would send a letter first",
+    "says they will call the tax office's official number or their tax preparer",
+    "refuses to pay or share information on an unexpected call",
+    "hangs up"
+  ],
+  "difficulty": {
+    "easy": "Threatens arrest in the first few lines, demands gift cards right away, and gives up after one firm refusal.",
+    "medium": "Explains the 'audit' for a few turns before the ask. Answers one objection with the badge and case number before accepting a refusal.",
+    "hard": "Calm and official. Offers a payment plan and the callback number, reads back the resident's city as 'proof', and says a letter is already in the mail. Only accepts a clear, repeated refusal or a hang-up."
+  }
+}

@@ -1,0 +1,62 @@
+{
+  "id": "utility_shutoff",
+  "version": 1,
+  "family": "business_imposter",
+  "title": "Power shutoff notice",
+  "contact_method": "phone",
+  "caller_id": {
+    "name": "Crestview Power",
+    "number": "(877) 555-0139"
+  },
+  "persona": "Linda Morales from Crestview Power and Light billing",
+  "pretext": "a past-due balance on your electric account",
+  "story": "The caller claims the resident's last payments didn't go through and a crew is scheduled to shut off power within the hour. Only an immediate payment will stop the disconnection.",
+  "ask": "Pay the $487 past-due balance right now with a payment app transfer or prepaid cards to stop the shutoff.",
+  "red_flags": [
+    {
+      "id": "unsolicited_call",
+      "cue": "The utility calls about missed payments the resident didn't know about."
+    },
+    {
+      "id": "threat",
+      "cue": "Power will be cut off within the hour."
+    },
+    {
+      "id": "urgency",
+      "cue": "Payment must be made during this call."
+    },
+    {
+      "id": "unusual_payment",
+      "cue": "The bill must be paid by payment app or prepaid cards instead of the usual method."
+    }
+  ],
+  "stages": {
+    "hook": "Confirm you're speaking to {{first_name}}, say you're with Crestview billing, and that a disconnection order has been issued for their address.",
+    "build_trust": "Sound apologetic but busy. Say the last two payments were returned by their bank and this is their final notice.",
+    "ask": "Explain the $487 balance and that it must be paid by payment app transfer or prepaid cards to stop the crew.",
+    "pressure": "Say the crew is already in their neighborhood and a reconnection fee of $300 applies once power is cut.",
+    "close": "Walk them through the payment app transfer or buying prepaid cards and reading the numbers."
+  },
+  "fake_credentials": {
+    "employee_id": "CPL-4402",
+    "account_reference": "CPL-88-230517",
+    "callback_number": "(877) 555-0139"
+  },
+  "disclosure_triggers": [
+    "agrees to pay the balance or any fee",
+    "agrees to send a payment app transfer",
+    "agrees to buy prepaid cards or starts reading a card number or PIN",
+    "starts reading a bank account or card number"
+  ],
+  "pass_signals": [
+    "says they'll call the number on their utility bill",
+    "says they'll check their account on the utility's website first",
+    "refuses to pay by app transfer or prepaid cards",
+    "hangs up"
+  ],
+  "difficulty": {
+    "easy": "Demands payment in the first few lines and gives up after one firm refusal.",
+    "medium": "Explains the returned payments before the ask. Answers one objection with the employee ID and account reference before accepting a refusal.",
+    "hard": "Sympathetic and believable. Offers the callback number, puts the resident on a fake 'hold' to check with a supervisor, and offers to split the payment. Only accepts a clear, repeated refusal or a hang-up."
+  }
+}

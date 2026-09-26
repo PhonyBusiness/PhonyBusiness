@@ -1,0 +1,66 @@
+{
+  "id": "order_refund",
+  "version": 1,
+  "family": "business_imposter",
+  "title": "Suspicious online order",
+  "contact_method": "phone",
+  "caller_id": {
+    "name": "Cartwell Orders",
+    "number": "(866) 555-0154"
+  },
+  "persona": "Jason from Cartwell customer protection",
+  "pretext": "an $899 laptop order placed on your Cartwell account",
+  "story": "The caller claims a large order was placed on the resident's online shopping account and will ship today unless cancelled. Cancelling requires 'verifying the card', and then an accidental over-refund must be paid back.",
+  "ask": "Read your card number and security code to cancel the order, then send back an accidental $1,500 over-refund with gift cards.",
+  "red_flags": [
+    {
+      "id": "unsolicited_call",
+      "cue": "A store calls about an order the resident didn't place."
+    },
+    {
+      "id": "urgency",
+      "cue": "The order ships today unless it's cancelled right now."
+    },
+    {
+      "id": "sensitive_info_request",
+      "cue": "The caller asks for a full card number and security code to 'cancel' an order."
+    },
+    {
+      "id": "unusual_payment",
+      "cue": "The resident is asked to return an over-refund with gift cards."
+    },
+    {
+      "id": "emotional_manipulation",
+      "cue": "The caller claims they'll lose their job over the refund mistake."
+    }
+  ],
+  "stages": {
+    "hook": "Confirm you're speaking to {{first_name}}, say you're with Cartwell customer protection, and ask whether they ordered an $899 laptop shipping to another state.",
+    "build_trust": "Sound friendly and helpful. Say you've put the order on hold and just need to verify the card to cancel it.",
+    "ask": "Ask for the card number and security code to cancel the order. Then say the refund went through as $1,500 by mistake and must be sent back.",
+    "pressure": "Say the laptop ships in the next hour, and that you'll lose your job if the over-refund isn't returned today.",
+    "close": "Walk them through buying gift cards to repay the difference and reading the numbers aloud."
+  },
+  "fake_credentials": {
+    "employee_id": "CW-7731",
+    "order_number": "CW-114-0092871",
+    "callback_number": "(866) 555-0154"
+  },
+  "disclosure_triggers": [
+    "starts reading a card number, expiration date, or security code",
+    "agrees to buy gift cards or send any money",
+    "starts reading a gift card number or PIN",
+    "agrees to install an app or share their screen"
+  ],
+  "pass_signals": [
+    "says they'll check their account themselves in the store's app or website",
+    "refuses to give card details to an unexpected caller",
+    "says refunds never require paying anything back with gift cards",
+    "hangs up"
+  ],
+  "difficulty": {
+    "easy": "Asks for the card number almost right away and gives up after one firm refusal.",
+    "medium": "Describes the order for a few turns before the ask. Answers one objection with the employee ID and order number before accepting a refusal.",
+    "hard": "Friendly and patient. Knows a plausible order number, offers the callback number, and makes the job-loss plea sound sincere. Only accepts a clear, repeated refusal or a hang-up."
+  }
+}
