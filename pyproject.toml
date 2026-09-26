@@ -1,0 +1,16 @@
+[project]
+name = "scamshield"
+version = "0.1.0"
+description = "Opt-in voice scam simulation and awareness training."
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "streamlit>=1.40,<2",
+    "fastapi>=0.115,<1",
+    "uvicorn>=0.30,<1",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8,<10",
+]
