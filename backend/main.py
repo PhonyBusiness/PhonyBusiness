@@ -6,6 +6,7 @@ from datetime import datetime, timezone
 from bson import ObjectId
 from bson.errors import InvalidId
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
 from backend.config import get_settings
@@ -30,6 +31,14 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(title="PhonyBusiness API", version="0.1.0", lifespan=lifespan)
+
+# Allow the separately served frontend to call the API from the browser.
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5500", "http://127.0.0.1:5500"],
+    allow_methods=["GET", "POST"],
+    allow_headers=["Content-Type"],
+)
 
 
 @app.get("/health")

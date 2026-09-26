@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PhonyBusiness · Trends</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="dashboard.css">
+</head>
+<body>
+  <main class="dash">
+    <header class="dash-header">
+      <div>
+        <h1>Scam call trends</h1>
+        <p class="muted">Practice call results across everyone. Updates every 5 seconds.</p>
+      </div>
+      <a href="index.html">Try a practice call →</a>
+    </header>
+
+    <p id="notice" class="notice" hidden></p>
+
+    <section class="tiles">
+      <div class="tile">
+        <p class="tile-label">Practice calls</p>
+        <p id="stat-total" class="tile-value">–</p>
+      </div>
+      <div class="tile">
+        <p class="tile-label">Pass rate</p>
+        <p id="stat-pass" class="tile-value">–</p>
+      </div>
+      <div class="tile">
+        <p class="tile-label">Fail rate</p>
+        <p id="stat-fail" class="tile-value">–</p>
+      </div>
+    </section>
+
+    <section class="charts">
+      <figure class="card">
+        <figcaption>Fail rate by scenario</figcaption>
+        <div class="chart-box"><canvas id="chart-scenario"></canvas></div>
+      </figure>
+      <figure class="card">
+        <figcaption>Calls per day</figcaption>
+        <div class="chart-box"><canvas id="chart-daily"></canvas></div>
+      </figure>
+    </section>
+
+    <section class="card">
+      <h2>Recent calls</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Time</th><th>Scenario</th><th>Result</th><th>Red flags</th></tr>
+          </thead>
+          <tbody id="recent">
+            <tr><td colspan="4" class="muted">No calls yet.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <script type="module" src="dashboard.js"></script>
+</body>
+</html>

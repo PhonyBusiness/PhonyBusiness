@@ -1,0 +1,72 @@
+/* Dashboard layout; base colors and fonts come from style.css. */
+
+.dash {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 32px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.dash-header {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 12px;
+}
+.dash-header p { margin-top: 6px; }
+
+.notice {
+  margin: 0;
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: #2a2412;
+  color: #fab219;
+  font-size: 14px;
+}
+
+.card {
+  margin: 0;
+  padding: 16px;
+  border-radius: 14px;
+  background: #1a1a1a;
+}
+.card h2, figcaption { font-size: 15px; font-weight: 600; margin: 0 0 12px; }
+
+.tiles {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+.tile { padding: 14px; border-radius: 14px; background: #1a1a1a; }
+.tile-label { margin: 0; color: #9a9a9a; font-size: 14px; }
+.tile-value { margin: 6px 0 0; font-size: clamp(24px, 7vw, 34px); font-weight: 700; font-variant-numeric: tabular-nums; }
+
+.charts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 16px;
+}
+.chart-box { position: relative; height: 240px; }
+
+.table-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; }
+th { text-align: left; color: #9a9a9a; font-weight: 500; }
+th, td { padding: 10px 8px; border-bottom: 1px solid #2a2a2a; vertical-align: top; }
+td.muted { text-align: center; }
+
+/* Result pill: icon + label, never color alone */
+.pill {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+  background: #3a3a3a;
+}
+.pill.pass { background: #0ca30c; color: #06260f; }
+.pill.fail { background: #d03b3b; color: #fff; }
+.pill.caution { background: #fab219; color: #2b2200; }

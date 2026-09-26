@@ -110,17 +110,30 @@ $("btn-accept").onclick = async () => {
   show("call");
 
   try {
-    await navigator.mediaDevices.getUserMedia({ audio: true });
-    conversation = await Conversation.startSession({
+    // Ask for mic permission up front, then release it; the SDK opens its own stream.
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    stream.getTracks().forEach((t) => t.stop());
+    const session = await Conversation.startSession({
       signedUrl: callData.signed_url,
       dynamicVariables: callData.dynamic_variables,
       onConnect: () => {
+        if (callEnded) return;
         $("call-status").textContent = "";
         startTimer();
       },
+      onStatusChange: ({ status }) => console.log("[call] status:", status),
       onDisconnect: () => endCall(),
       onError: () => ($("call-status").textContent = "Connection problem"),
     });
+    // The user may have hung up while we were still connecting.
+    if (callEnded) {
+      session.endSession().catch(() => {});
+      return;
+    }
+    conversation = session;
+    // Connected: make sure the timer runs even if onConnect didn't fire.
+    $("call-status").textContent = "";
+    startTimer();
     // Let the backend match the post-call webhook to this call.
     api(`/calls/${callId}/session`, { conversation_id: conversation.getId() }).catch(() => {});
   } catch {
@@ -132,6 +145,7 @@ $("btn-accept").onclick = async () => {
 // ---------- In-call screen ----------
 
 function startTimer() {
+  if (timerInterval) return; // already running
   const started = Date.now();
   $("timer").textContent = "00:00";
   timerInterval = setInterval(() => {
@@ -147,20 +161,22 @@ $("btn-mute").onclick = () => {
 };
 
 $("btn-hangup").onclick = () => {
-  // Hanging up on a scammer counts as a pass; the backend records that.
-  api(`/calls/${callId}/hangup`, {}).catch(() => {});
-  endCall();
+  // Hanging up on a scammer counts as a pass; the backend records that
+  // and returns the call's outcome, which the recap can show right away.
+  const hangup = api(`/calls/${callId}/hangup`, {}).catch(() => null);
+  endCall(hangup);
 };
 
 // Runs once, whether the user hung up or the agent ended the call.
-async function endCall() {
+async function endCall(hangup = null) {
   if (callEnded) return;
   callEnded = true;
   clearInterval(timerInterval);
+  timerInterval = null;
   const c = conversation;
   conversation = null;
   await c?.endSession().catch(() => {});
-  showRecap();
+  showRecap((await hangup) || {});
 }
 
 // ---------- Recap screen ----------
@@ -201,8 +217,8 @@ function renderRecap(call) {
   fillList("donts", tips.map((t) => t.dont).filter(Boolean));
 }
 
-async function showRecap() {
-  renderRecap({});
+async function showRecap(initial) {
+  renderRecap(initial);
   show("recap");
 
   // Poll until the post-call re-score lands (up to ~20 seconds).
