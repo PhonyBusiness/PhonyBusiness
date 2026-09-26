@@ -1,21 +1,25 @@
 """FastAPI entry point for PhonyBusiness."""
 
+import json
+import logging
 from contextlib import asynccontextmanager
 from datetime import datetime, timezone
 
 from bson import ObjectId
 from bson.errors import InvalidId
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import PlainTextResponse
 from pydantic import BaseModel, field_validator
 
 from backend.config import get_settings
 from backend.database import MongoDatabase
 from backend.elevenlabs_client import ElevenLabsError, get_signed_url
+from backend.post_call import build_conversation, dynamic_variables, verify_signature
 from backend.scenarios import get_scenario, list_scenarios
 from backend.tips import get_tips
 
 
+logger = logging.getLogger(__name__)
 settings = get_settings()
 mongo = MongoDatabase(settings.mongodb_uri)
 
@@ -218,3 +222,35 @@ def get_call(call_id: str) -> CallDetailResponse:
         flags=flags,
         tips=tips,
     )
+
+
+@app.post("/webhooks/post-call")
+async def post_call_webhook(request: Request) -> dict[str, str]:
+    """Store the analytics fields of a finished conversation; the transcript text is never saved."""
+    raw_body = await request.body()
+    if settings.elevenlabs_webhook_secret:
+        if not verify_signature(raw_body, request.headers.get("ElevenLabs-Signature"), settings.elevenlabs_webhook_secret):
+            raise HTTPException(status_code=401, detail="Invalid webhook signature")
+    else:
+        logger.warning("ELEVENLABS_WEBHOOK_SECRET is not set; accepting unsigned post-call webhook")
+
+    try:
+        payload = json.loads(raw_body)
+    except json.JSONDecodeError as exc:
+        raise HTTPException(status_code=400, detail="Body is not JSON") from exc
+
+    if payload.get("type") != "post_call_transcription":
+        return {"status": "ignored"}
+
+    data = payload.get("data") or {}
+    conversation_id = data.get("conversation_id")
+    if not conversation_id:
+        raise HTTPException(status_code=400, detail="Missing conversation_id")
+
+    call = mongo.find_call_for_conversation(conversation_id, dynamic_variables(data).get("call_id"))
+    conversation = build_conversation(payload, call)
+    mongo.save_conversation(conversation)
+    if call is not None:
+        mongo.close_call_from_webhook(call["_id"], conversation)
+
+    return {"status": "stored", "conversation_id": conversation_id}
