@@ -1,4 +1,6 @@
-"""Do and don't tips for each scenario red flag, based on FTC consumer guidance.
+"""Tip bank: do/don't guidance for each red flag, sourced from FTC consumer guidance.
+
+Keyed by the exact red_flags text used in scenarios.py.
 """
 
 TIP_BANK = {
@@ -171,3 +173,8 @@ TIP_BANK = {
         "dont": "Don't book a trip if the caller won't give you specific details.",
     },
 }
+
+
+def get_tips(flags: list[str]) -> list[dict]:
+    """Look up tips for the given flags, silently skipping any that don't match."""
+    return [TIP_BANK[flag] | {"label": flag} for flag in flags if flag in TIP_BANK]
