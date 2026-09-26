@@ -53,8 +53,12 @@ app.py              Streamlit frontend entry point
 backend/
   config.py            Environment-backed settings
   database.py          MongoDB client and call-record operations
+  deps.py              Shared settings/database instances used across routes
   elevenlabs_client.py ElevenLabs integration
-  main.py              FastAPI application and routes
+  main.py              FastAPI application setup and router registration
+  routers/
+    calls.py           Scenario listing and call lifecycle routes
+    tools.py           Live in-call agent tool routes
   scenarios.py         Scam call scenario configs
   tips.py              Red-flag guidance shown after a call
 pyproject.toml      Dependencies
