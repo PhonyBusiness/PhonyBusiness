@@ -122,3 +122,18 @@ def set_call_session(call_id: str, payload: SessionRequest) -> dict[str, str]:
         raise HTTPException(status_code=404, detail="Call not found")
 
     return {"status": "ok"}
+
+
+@app.post("/calls/{call_id}/hangup")
+def hangup_call(call_id: str) -> dict[str, str | None]:
+    """End the call; if no outcome was recorded yet, hanging up counts as a pass."""
+    try:
+        oid = ObjectId(call_id)
+    except InvalidId as exc:
+        raise HTTPException(status_code=400, detail="Invalid call_id") from exc
+
+    call = mongo.hangup_call(oid)
+    if call is None:
+        raise HTTPException(status_code=404, detail="Call not found")
+
+    return {"call_id": call_id, "status": call["status"], "outcome": call["outcome"]}

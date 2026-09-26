@@ -1,7 +1,7 @@
 from datetime import datetime, timezone
 
 from bson import ObjectId
-from pymongo import MongoClient
+from pymongo import MongoClient, ReturnDocument
 from pymongo.errors import PyMongoError
 
 
@@ -65,3 +65,19 @@ class MongoDatabase:
             },
         )
         return result.matched_count > 0
+
+    def hangup_call(self, call_id: ObjectId) -> dict | None:
+        """End the call, filling in outcome='pass' only if no outcome was already recorded."""
+        return self.db["calls"].find_one_and_update(
+            {"_id": call_id},
+            [
+                {
+                    "$set": {
+                        "status": "ended",
+                        "updated_at": datetime.now(timezone.utc),
+                        "outcome": {"$ifNull": ["$outcome", "pass"]},
+                    }
+                }
+            ],
+            return_document=ReturnDocument.AFTER,
+        )
