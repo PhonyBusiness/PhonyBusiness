@@ -7,7 +7,7 @@ from fastapi.responses import PlainTextResponse
 from pydantic import BaseModel, field_validator
 
 from backend.deps import mongo
-from backend.tips import get_tips
+from backend.tips import format_tips
 
 router = APIRouter()
 
@@ -40,5 +40,4 @@ def record_outcome(payload: RecordOutcomeRequest) -> str:
     if call is None:
         raise HTTPException(status_code=404, detail="Call not found")
 
-    tips = get_tips(payload.flags)
-    return " ".join(f"{tip['label']}. Do: {tip['do']} Don't: {tip['dont']}" for tip in tips)
+    return format_tips(payload.result, payload.flags)
