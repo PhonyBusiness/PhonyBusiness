@@ -1,8 +1,8 @@
-"""FastAPI entry point for ScamShield."""
+"""FastAPI entry point for PhonyBusiness."""
 
 from fastapi import FastAPI
 
-app = FastAPI(title="ScamShield API", version="0.1.0")
+app = FastAPI(title="PhonyBusiness API", version="0.1.0")
 
 
 @app.get("/health")

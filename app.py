@@ -1,9 +1,9 @@
-"""Streamlit entry point for ScamShield."""
+"""Streamlit entry point for PhonyBusiness."""
 
 import streamlit as st
 
-st.set_page_config(page_title="ScamShield", page_icon="🛡️")
+st.set_page_config(page_title="PhonyBusiness", page_icon="🛡️")
 
-st.title("ScamShield")
+st.title("PhonyBusiness")
 st.write("Practice recognizing phone scams in a consent-based training program.")
 st.info("Project initialized. Enrollment, practice calls, and reporting are coming next.")

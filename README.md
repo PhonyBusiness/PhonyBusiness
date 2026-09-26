@@ -1,4 +1,4 @@
-# ScamShield
+# PhonyBusiness
 
 Opt-in voice scam simulation and awareness training.
 
@@ -52,6 +52,25 @@ keep real credentials in an untracked `.env` or deployment secrets.
 
 ## Development
 
-Pytest is included for future behavior tests; no tests are needed for this scaffold.
+Populate `.env` using the keys in `.env.example`, then run the live integration checks:
+
+```sh
+uv sync
+RUN_INTEGRATION_TESTS=1 uv run pytest tests/test_integrations.py -v --tb=no
+```
+
+The seven checks cover MongoDB connectivity, Twilio account status, phone number
+ownership and voice/SMS capabilities, Twilio Verify service access, ElevenLabs
+user and agent access, and Gemini model listing. Missing values fail their checks.
+Shell environment variables override `.env` values.
+
+These checks do not place calls, send messages, generate content, or write data.
+They do not prove end-to-end call routing, model generation quota, or database
+read/write permissions. Restricted ElevenLabs keys need user-read and agent-read
+access for both checks to pass. Provider response bodies and credentials are not
+printed; avoid pytest `--showlocals` when working with secrets.
+
+Normal `uv run pytest` skips live checks unless `RUN_INTEGRATION_TESTS=1` is set.
+
 Commit the generated `uv.lock` after the first successful `uv sync` to make
 dependency resolution reproducible.

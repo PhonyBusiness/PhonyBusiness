@@ -1,5 +1,5 @@
 [project]
-name = "scamshield"
+name = "phonybusiness"
 version = "0.1.0"
 description = "Opt-in voice scam simulation and awareness training."
 readme = "README.md"
@@ -13,4 +13,7 @@ dependencies = [
 [dependency-groups]
 dev = [
     "pytest>=8,<10",
+    "httpx>=0.28,<1",
+    "python-dotenv>=1,<2",
+    "pymongo>=4.10,<5",
 ]
