@@ -177,9 +177,6 @@ def record_outcome(payload: RecordOutcomeRequest) -> str:
         raise HTTPException(status_code=404, detail="Call not found")
 
     tips = get_tips(payload.flags)
-    if not tips:
-        return "No specific tips for this call."
-
     return " ".join(f"{tip['label']}. Do: {tip['do']} Don't: {tip['dont']}" for tip in tips)
 
 
@@ -210,7 +207,8 @@ def get_call(call_id: str) -> CallDetailResponse:
         raise HTTPException(status_code=404, detail="Call not found")
 
     flags = call.get("flags")
-    tips = [{"do": tip["do"], "dont": tip["dont"]} for tip in get_tips(flags)] if flags else None
+    ended = call["status"] == "ended"
+    tips = [{"do": tip["do"], "dont": tip["dont"]} for tip in get_tips(flags)] if ended else None
 
     return CallDetailResponse(
         call_id=call_id,

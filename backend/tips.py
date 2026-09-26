@@ -43,6 +43,16 @@ TIP_BANK = {
 }
 
 
-def get_tips(flags: list[str]) -> list[dict]:
-    """Look up tips for the given flags, silently skipping any that don't match."""
-    return [TIP_BANK[flag] | {"label": flag} for flag in flags if flag in TIP_BANK]
+FALLBACK_TIPS = [
+    {
+        "label": "General advice",
+        "do": "Hang up, then contact the person or organization directly using a number or method you already know and trust, not one the caller gave you.",
+        "dont": "Don't share personal details, codes, or payment information on a call you didn't start.",
+    },
+]
+
+
+def get_tips(flags: list[str] | None) -> list[dict]:
+    """Look up tips for the given flags. Falls back to general guidance if none match."""
+    matched = [TIP_BANK[flag] | {"label": flag} for flag in (flags or []) if flag in TIP_BANK]
+    return matched or FALLBACK_TIPS
