@@ -1,6 +1,6 @@
 {
   "id": "investment_opportunity",
-  "version": 1,
+  "version": 2,
   "family": "investment",
   "title": "Guaranteed investment returns",
   "contact_method": "phone",
@@ -19,7 +19,7 @@
     },
     {
       "id": "too_good_to_be_true",
-      "cue": "Guaranteed high returns with no risk."
+      "cue": "Guaranteed profits with little or no risk. Only scammers guarantee returns."
     },
     {
       "id": "urgency",
@@ -62,5 +62,9 @@
     "easy": "Asks for money within a few turns and gives up after one firm refusal.",
     "medium": "Tells success stories for a few turns before the ask. Answers one objection with the advisor ID and fund name before accepting a refusal.",
     "hard": "Smooth and patient. Offers a small 'starter' investment of $500, promises a quick test withdrawal, and offers the callback number. Only accepts a clear, repeated refusal or a hang-up."
-  }
+  },
+  "sources": [
+    "https://consumer.ftc.gov/articles/investment-scams",
+    "https://consumer.ftc.gov/articles/what-know-about-cryptocurrency-scams"
+  ]
 }

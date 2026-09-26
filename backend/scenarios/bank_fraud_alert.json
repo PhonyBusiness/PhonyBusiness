@@ -66,5 +66,10 @@
     "easy": "Asks for the code within the first few turns, sounds scripted, and gives up after one firm refusal.",
     "medium": "Spends a few turns 'reviewing charges' before the ask. Answers one objection with the employee ID and case number before accepting a refusal.",
     "hard": "Polished and calm. Knows the 'last four digits' of the card, invites the resident to check the caller ID, and says the code is only to 'cancel the fraudulent charge'. Only accepts a clear, repeated refusal or a hang-up."
-  }
+  },
+  "sources": [
+    "https://consumer.ftc.gov/consumer-alerts/2024/06/got-call-about-fraud-activity-your-bank-account-it-could-be-scammer",
+    "https://consumer.ftc.gov/consumer-alerts/2024/03/never-move-your-money-protect-it-thats-scam",
+    "https://consumer.ftc.gov/consumer-alerts/2024/03/whats-verification-code-why-would-someone-ask-me-it"
+  ]
 }

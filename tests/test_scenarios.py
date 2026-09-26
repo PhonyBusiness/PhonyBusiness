@@ -12,7 +12,7 @@ SCENARIO_FILES = sorted(SCENARIO_DIR.glob("*.json"))
 REQUIRED_FIELDS = {
     "id", "version", "family", "title", "contact_method", "caller_id", "persona",
     "pretext", "story", "ask", "red_flags", "stages", "fake_credentials",
-    "disclosure_triggers", "pass_signals", "difficulty",
+    "disclosure_triggers", "pass_signals", "difficulty", "sources",
 }
 STAGES = {"hook", "build_trust", "ask", "pressure", "close"}
 DIFFICULTIES = {"easy", "medium", "hard"}
@@ -54,3 +54,5 @@ def test_scenario_shape(path):
     assert scenario["disclosure_triggers"] and scenario["pass_signals"]
     assert FICTIONAL_NUMBER.fullmatch(scenario["caller_id"]["number"])
     assert FICTIONAL_NUMBER.fullmatch(scenario["fake_credentials"]["callback_number"])
+    assert scenario["sources"]
+    assert all(re.match(r"https://(www\.)?consumer\.ftc\.gov/", url) for url in scenario["sources"])

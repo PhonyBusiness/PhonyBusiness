@@ -62,5 +62,9 @@
     "easy": "Asks for the member number right away and gives up after one firm refusal.",
     "medium": "Talks about the free extras before the ask. Answers one objection with the employee ID and reference number before accepting a refusal.",
     "hard": "Gentle and reassuring. Waives the fee if challenged and asks only for the member number 'to mail the card', offers the callback number, and knows the resident's city. Only accepts a clear, repeated refusal or a hang-up."
-  }
+  },
+  "sources": [
+    "https://consumer.ftc.gov/consumer-alerts/2024/06/your-medicare-number-valuable-protect-it",
+    "https://www.consumer.ftc.gov/scams/medicare-impersonators"
+  ]
 }

@@ -1,6 +1,6 @@
 {
   "id": "debt_relief",
-  "version": 1,
+  "version": 2,
   "family": "debt_relief",
   "title": "Lower your interest rate",
   "contact_method": "phone",
@@ -35,8 +35,8 @@
     }
   ],
   "stages": {
-    "hook": "Confirm you're speaking to {{first_name}}, say you're with Lowbridge Credit, and that they've been pre-approved to cut their card interest rate to zero.",
-    "build_trust": "Sound upbeat. Ask roughly how much they owe and how many cards they have, and say how much they'll save each year.",
+    "hook": "Start like a recorded message: 'This is your final notice to lower your credit card interest rate. Press 1 to speak to an agent.' Then confirm you're speaking to {{first_name}}, say you're with Lowbridge Credit, and that they've been pre-approved to cut their card interest rate to zero.",
+    "build_trust": "Sound upbeat. Say Lowbridge has special relationships with the major banks, ask roughly how much they owe and how many cards they have, and say how much they'll save each year.",
     "ask": "Ask for each card number to enroll them, then explain the one-time $795 enrollment fee.",
     "pressure": "Say pre-approval expires when the call ends and this program is only offered once.",
     "close": "Take the card numbers and fee payment and 'confirm' their enrollment."
@@ -62,5 +62,9 @@
     "easy": "Asks for card numbers almost right away and gives up after one firm refusal.",
     "medium": "Talks about savings for a few turns before the ask. Answers one objection with the employee ID and approval code before accepting a refusal.",
     "hard": "Friendly and confident. Offers a money-back guarantee, lowers the fee when challenged, and offers the callback number. Only accepts a clear, repeated refusal or a hang-up."
-  }
+  },
+  "sources": [
+    "https://consumer.ftc.gov/articles/how-recognize-scams-lower-your-credit-card-interest-rate",
+    "https://consumer.ftc.gov/consumer-alerts/2026/03/looking-debt-relief-heres-how-avoid-scam"
+  ]
 }

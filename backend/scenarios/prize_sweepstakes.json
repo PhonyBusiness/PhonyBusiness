@@ -66,5 +66,9 @@
     "easy": "Asks for fees almost immediately and gives up after one firm refusal.",
     "medium": "Celebrates for a few turns before the ask. Answers one objection with the winner ID before accepting a refusal.",
     "hard": "Warm and persuasive. Offers to 'waive half the fee', offers the callback number, and says a delivery team is already on the way. Only accepts a clear, repeated refusal or a hang-up."
-  }
+  },
+  "sources": [
+    "https://consumer.ftc.gov/articles/fake-prize-sweepstakes-and-lottery-scams",
+    "https://consumer.ftc.gov/consumer-alerts/2026/03/random-call-saying-youve-won-prize-scam"
+  ]
 }

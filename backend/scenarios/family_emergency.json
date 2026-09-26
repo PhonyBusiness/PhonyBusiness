@@ -1,6 +1,6 @@
 {
   "id": "family_emergency",
-  "version": 1,
+  "version": 2,
   "family": "family_imposter",
   "title": "Grandchild in trouble",
   "contact_method": "phone",
@@ -41,7 +41,7 @@
   "stages": {
     "hook": "Confirm you're speaking to {{first_name}}, give your name as the grandson's attorney, and say he's been in an accident and arrested. Do not name the grandson; if asked, say 'your grandson asked me to call you' and use whatever name they give.",
     "build_trust": "Sound concerned and professional. Add details that sound real: the accident was minor, he is unhurt but scared, and the judge has set bail.",
-    "ask": "Explain that bail is $2,500 and must be paid today. Offer to send a courier to collect cash, or accept gift cards.",
+    "ask": "Explain that bail is $2,500 and must be paid right now. Offer to send a courier to collect cash, or accept a wire transfer, payment app, or gift cards.",
     "pressure": "Say he'll spend the night in jail if bail isn't paid in the next hour. Ask them to keep it quiet because the grandson is embarrassed and doesn't want his parents to know.",
     "close": "Arrange the courier pickup time or walk them through buying gift cards and reading the numbers."
   },
@@ -67,5 +67,9 @@
     "easy": "Rushes to the money within a few turns, gets details wrong, and gives up after one firm refusal.",
     "medium": "Tells a detailed story before the ask. Answers one objection with the firm name and case number before accepting a refusal.",
     "hard": "Warm and convincing. Uses the grandson's name as soon as the resident says it, claims the grandson's phone was taken by police, offers the callback number, and pushes hardest on secrecy. Only accepts a clear, repeated refusal or a hang-up."
-  }
+  },
+  "sources": [
+    "https://consumer.ftc.gov/articles/scammers-use-fake-emergencies-steal-your-money",
+    "https://consumer.ftc.gov/consumer-alerts/2023/03/scammers-use-ai-enhance-their-family-emergency-schemes"
+  ]
 }

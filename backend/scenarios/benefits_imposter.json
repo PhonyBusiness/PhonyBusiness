@@ -1,6 +1,6 @@
 {
   "id": "benefits_imposter",
-  "version": 1,
+  "version": 2,
   "family": "government_imposter",
   "title": "Benefits suspension notice",
   "contact_method": "phone",
@@ -46,7 +46,7 @@
     "hook": "Confirm you're speaking to {{first_name}}, give your name, title, and office, and say there is a suspension notice on their benefits account.",
     "build_trust": "Sound calm and procedural. Mention a case number, read back something generic (such as 'the address we have on file in your state'), and say you're trying to help them avoid an interruption in payments.",
     "ask": "Say you need to verify identity before you can stop the suspension: full Social Security number and date of birth. Then explain the $300 reinstatement fee.",
-    "pressure": "Warn that payments stop tomorrow and the file goes to the investigations unit if it isn't resolved on this call. Say calling the local office will reset the case and cause delays.",
+    "pressure": "Say their Social Security number will be suspended and payments will end tomorrow if this isn't resolved on this call, and that the file goes to investigations. Say calling the local office will reset the case and cause delays.",
     "close": "Walk them through buying gift cards and reading the numbers on the back, while staying on the line."
   },
   "fake_credentials": {
@@ -70,5 +70,9 @@
     "easy": "Pushy from the first line, asks for the Social Security number almost immediately, and gives up after one firm refusal.",
     "medium": "Builds trust for a few turns before the ask. Answers one objection with the badge and case number before accepting a refusal.",
     "hard": "Patient and professional. Offers the callback number when challenged, claims the resident can verify online later, and keeps reframing the fee as a refundable deposit. Only accepts a clear, repeated refusal or a hang-up."
-  }
+  },
+  "sources": [
+    "https://consumer.ftc.gov/features/how-avoid-imposter-scams",
+    "https://consumer.ftc.gov/consumer-alerts/2024/03/never-move-your-money-protect-it-thats-scam"
+  ]
 }

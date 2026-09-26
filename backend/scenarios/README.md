@@ -2,7 +2,8 @@
 
 One JSON file per practice-call scenario. Every agency, company, person, and
 phone number is fictional. Phone numbers use the 555-0100 to 555-0199 range
-reserved for fiction.
+reserved for fiction. Scripts follow what the FTC documents about each scam:
+the claims, the ask, and the payment methods scammers demand.
 
 ## Fields
 
@@ -24,6 +25,7 @@ reserved for fiction.
 | `disclosure_triggers` | Agent prompt | Any of these means fail: interrupt and call `record_outcome` |
 | `pass_signals` | Agent prompt, re-scoring | Behaviors that count as a pass |
 | `difficulty` | Agent (`{{difficulty}}`) | How the scammer behaves at `easy`, `medium`, and `hard` |
+| `sources` | Team, pitch | FTC consumer guidance the script is based on |
 
 The backend sends the text for the chosen difficulty level as `{{difficulty}}`,
 not just the level name.

@@ -62,5 +62,9 @@
     "easy": "Asks for the code right away and gives up after one firm refusal.",
     "medium": "Talks about the discount for a few turns before the ask. Answers one objection with the employee ID and ticket number before accepting a refusal.",
     "hard": "Friendly and quick. Says the code is 'just to apply the discount', knows the resident's plan type, and offers the callback number. Only accepts a clear, repeated refusal or a hang-up."
-  }
+  },
+  "sources": [
+    "https://consumer.ftc.gov/consumer-alerts/2024/03/whats-verification-code-why-would-someone-ask-me-it",
+    "https://consumer.ftc.gov/consumer-alerts/2019/10/sim-swap-scams-how-protect-yourself"
+  ]
 }

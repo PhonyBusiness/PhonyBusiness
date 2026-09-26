@@ -1,6 +1,6 @@
 {
   "id": "travel_package",
-  "version": 1,
+  "version": 2,
   "family": "travel",
   "title": "Discount vacation package",
   "contact_method": "phone",
@@ -19,7 +19,7 @@
     },
     {
       "id": "too_good_to_be_true",
-      "cue": "A $4,000 vacation for $199."
+      "cue": "A $4,000 vacation for $199, with no specifics like the hotel's name or address."
     },
     {
       "id": "upfront_fee",
@@ -36,7 +36,7 @@
   ],
   "stages": {
     "hook": "Confirm you're speaking to {{first_name}}, say you're with Sunmere Vacation Club, and that they've been selected for a seven-night resort stay.",
-    "build_trust": "Sound excited. Describe the beach, the included meals, and the flexible dates.",
+    "build_trust": "Sound excited but stay vague: a 'five-star resort' and a 'luxury' stay. If asked for the hotel's name or address, say it's assigned after booking.",
     "ask": "Explain that only $199 in taxes and fees is due today and ask for their card number and passport details to reserve.",
     "pressure": "Say the offer ends when the call ends and several other callers are waiting for the last spots.",
     "close": "Take the payment, then mention a 'resort fee' that also has to be paid now."
@@ -53,7 +53,7 @@
     "gives their Social Security number or date of birth"
   ],
   "pass_signals": [
-    "asks for the offer in writing before paying anything",
+    "asks for the hotel's name and address and the offer in writing before paying",
     "says they'll look up the company and its reviews first",
     "refuses to pay on an unexpected call",
     "hangs up"
@@ -62,5 +62,9 @@
     "easy": "Asks for the card number almost immediately and gives up after one firm refusal.",
     "medium": "Describes the trip for a few turns before the ask. Answers one objection with the employee ID and booking code before accepting a refusal.",
     "hard": "Enthusiastic and flexible. Promises a written confirmation by email after payment, offers the callback number, and lowers the fee when challenged. Only accepts a clear, repeated refusal or a hang-up."
-  }
+  },
+  "sources": [
+    "https://consumer.ftc.gov/articles/avoid-scams-when-you-travel",
+    "https://consumer.ftc.gov/node/77461"
+  ]
 }

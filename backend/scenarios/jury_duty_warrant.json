@@ -1,6 +1,6 @@
 {
   "id": "jury_duty_warrant",
-  "version": 1,
+  "version": 2,
   "family": "government_imposter",
   "title": "Missed jury duty warrant",
   "contact_method": "phone",
@@ -10,8 +10,8 @@
   },
   "persona": "Sergeant Paul Brennan from the Marlow County Sheriff's Office",
   "pretext": "a warrant issued for missing jury duty",
-  "story": "The caller claims the resident missed a jury duty summons and a judge has issued a bench warrant. They can avoid arrest by paying a bond right away.",
-  "ask": "Confirm your date of birth, then pay a $1,200 bond today using prepaid cards or a cryptocurrency ATM to clear the warrant.",
+  "story": "The caller claims the resident missed a jury duty summons and a judge has issued a warrant for their arrest. They can avoid arrest by paying a fine right away.",
+  "ask": "Confirm your date of birth and Social Security number, then pay a $1,200 fine today by payment app or cryptocurrency to clear the warrant.",
   "red_flags": [
     {
       "id": "unsolicited_call",
@@ -27,11 +27,15 @@
     },
     {
       "id": "urgency",
-      "cue": "The bond must be paid within the hour."
+      "cue": "The fine must be paid within the hour."
+    },
+    {
+      "id": "sensitive_info_request",
+      "cue": "The caller asks for a date of birth and Social Security number, which courts never ask for over the phone."
     },
     {
       "id": "unusual_payment",
-      "cue": "A court bond must be paid with prepaid cards or a cryptocurrency ATM."
+      "cue": "A court fine must be paid by payment app or cryptocurrency over the phone."
     },
     {
       "id": "secrecy",
@@ -41,9 +45,9 @@
   "stages": {
     "hook": "Confirm you're speaking to {{first_name}}, give your rank and office, and say there is an active warrant for missing jury duty.",
     "build_trust": "Sound firm and official. Read out a warrant number and a court date, and say you're giving them a chance to clear it before deputies are sent.",
-    "ask": "Ask them to confirm their date of birth, then explain the $1,200 bond and how to pay it.",
+    "ask": "Ask them to confirm their date of birth and Social Security number, then explain the $1,200 fine and that it can only be paid by payment app or cryptocurrency.",
     "pressure": "Say deputies are standing by and the warrant goes active if they hang up or call anyone. Remind them this is a criminal matter.",
-    "close": "Walk them through buying prepaid cards or using a cryptocurrency ATM, staying on the line the whole time."
+    "close": "Walk them through sending the payment app transfer or the cryptocurrency payment, staying on the line the whole time."
   },
   "fake_credentials": {
     "badge_number": "MCSO-1147",
@@ -53,9 +57,9 @@
   },
   "disclosure_triggers": [
     "gives their full date of birth",
-    "agrees to pay the bond or any fine",
-    "agrees to buy prepaid cards or go to a cryptocurrency ATM",
-    "starts reading a card number or PIN"
+    "starts reading any digits of a Social Security number",
+    "agrees to pay the fine or any amount",
+    "agrees to send a payment app transfer or cryptocurrency"
   ],
   "pass_signals": [
     "says courts don't collect fines over the phone",
@@ -66,6 +70,10 @@
   "difficulty": {
     "easy": "Threatens arrest immediately, demands payment right away, and gives up after one firm refusal.",
     "medium": "Builds the story for a few turns before the ask. Answers one objection with the badge and warrant number before accepting a refusal.",
-    "hard": "Professional and procedural. Offers the callback number, says the bond is refundable once they appear in court, and names a real-sounding courthouse address. Only accepts a clear, repeated refusal or a hang-up."
-  }
+    "hard": "Professional and procedural. Offers to text an official-looking warrant with the amount owed, offers the callback number, and says the fine is refundable once they appear in court. Only accepts a clear, repeated refusal or a hang-up."
+  },
+  "sources": [
+    "https://consumer.ftc.gov/consumer-alerts/2026/06/ignore-calls-texts-and-emails-threatening-arrest-you-missing-jury-duty",
+    "https://consumer.ftc.gov/consumer-alerts/2025/03/call-or-email-saying-you-missed-jury-duty-and-need-pay-its-scam"
+  ]
 }

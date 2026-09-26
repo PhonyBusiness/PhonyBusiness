@@ -67,5 +67,8 @@
     "easy": "Asks for remote access within the first few turns, sounds scripted, and gives up after one firm refusal.",
     "medium": "Spends a few turns describing 'symptoms' before the ask. Answers one objection with the employee ID and ticket number before accepting a refusal.",
     "hard": "Calm and knowledgeable. Offers the callback number and a 'refund' if unhappy, suggests the resident can uninstall the software afterward, and switches to a refund-overpayment story if the resident refuses to pay. Only accepts a clear, repeated refusal or a hang-up."
-  }
+  },
+  "sources": [
+    "https://consumer.ftc.gov/articles/how-spot-avoid-and-report-tech-support-scams"
+  ]
 }

@@ -1,6 +1,6 @@
 {
   "id": "tax_debt",
-  "version": 1,
+  "version": 2,
   "family": "government_imposter",
   "title": "Unpaid tax debt",
   "contact_method": "phone",
@@ -57,7 +57,7 @@
     "starts giving bank account or routing numbers"
   ],
   "pass_signals": [
-    "says a tax office would send a letter first",
+    "says the tax office would contact them by mail first, not a threatening phone call",
     "says they will call the tax office's official number or their tax preparer",
     "refuses to pay or share information on an unexpected call",
     "hangs up"
@@ -66,5 +66,8 @@
     "easy": "Threatens arrest in the first few lines, demands gift cards right away, and gives up after one firm refusal.",
     "medium": "Explains the 'audit' for a few turns before the ask. Answers one objection with the badge and case number before accepting a refusal.",
     "hard": "Calm and official. Offers a payment plan and the callback number, reads back the resident's city as 'proof', and says a letter is already in the mail. Only accepts a clear, repeated refusal or a hang-up."
-  }
+  },
+  "sources": [
+    "https://consumer.ftc.gov/features/how-avoid-imposter-scams"
+  ]
 }

@@ -62,5 +62,9 @@
     "easy": "Asks for the card number almost right away and gives up after one firm refusal.",
     "medium": "Describes the order for a few turns before the ask. Answers one objection with the employee ID and order number before accepting a refusal.",
     "hard": "Friendly and patient. Knows a plausible order number, offers the callback number, and makes the job-loss plea sound sincere. Only accepts a clear, repeated refusal or a hang-up."
-  }
+  },
+  "sources": [
+    "https://consumer.ftc.gov/features/how-avoid-imposter-scams",
+    "https://consumer.ftc.gov/articles/how-spot-avoid-and-report-tech-support-scams"
+  ]
 }
