@@ -6,7 +6,7 @@ PhonyBusiness puts you on a realistic simulated phone call with an AI "scammer"
 running one of many common scripts — government imposters, tech support scams,
 fake family emergencies, and more. If you slip up, the call pauses and coaches
 you through what to watch for next time. If you handle it well, you get a recap
-of exactly what you did right. No real phone number, no real risk — just practice.
+of exactly what you did right. No real phone number, no real risk, just practice.
 
 ## Features
 
@@ -77,16 +77,9 @@ uv.lock              Locked dependency versions
 ## Environment variables
 
 See `.env.example` for the full list. At minimum you'll need a MongoDB
-connection string and ElevenLabs credentials; Gemini is used for post-call
+connection string and ElevenLabs credentials. Gemini is used for post-call
 scoring.
 
-Keep real credentials out of version control — `.env` is gitignored.
-
-## Roadmap
-
-- [ ] Post-call transcript scoring via Gemini
-- [ ] Trends dashboard
-- [ ] Deployed, mobile-friendly build
 
 ## Development
 
