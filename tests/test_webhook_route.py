@@ -7,7 +7,7 @@ import time
 from datetime import datetime, timezone
 from pathlib import Path
 
-from backend import main
+from backend import deps
 
 FIXTURE = Path(__file__).parent / "fixtures" / "post_call_webhook.json"
 
@@ -65,7 +65,7 @@ def test_other_event_types_are_ignored(client, mongo):
 
 
 def test_signature_required_when_secret_is_set(client, monkeypatch):
-    monkeypatch.setattr(main.settings, "elevenlabs_webhook_secret", "secret")
+    monkeypatch.setattr(deps.settings, "elevenlabs_webhook_secret", "secret")
     body = json.dumps(payload_for()).encode()
 
     assert client.post("/webhooks/post-call", content=body).status_code == 401
