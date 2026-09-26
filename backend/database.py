@@ -25,6 +25,8 @@ class MongoDatabase:
             connectTimeoutMS=10000,
             socketTimeoutMS=10000,
             timeoutMS=15000,
+            # Return UTC-aware datetimes so the API serializes them with a timezone.
+            tz_aware=True,
         )
         try:
             result = client.admin.command("ping")

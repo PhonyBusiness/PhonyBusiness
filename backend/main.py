@@ -3,7 +3,7 @@
 import json
 import logging
 from contextlib import asynccontextmanager
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 
 from bson import ObjectId
 from bson.errors import InvalidId
@@ -270,3 +270,34 @@ def conversation_analytics(conversation_id: str) -> dict:
     if conversation is None:
         raise HTTPException(status_code=404, detail="Conversation not found")
     return analytics.conversation_detail(conversation)
+
+
+@app.get("/analytics/overview")
+def analytics_overview() -> dict:
+    """Overview tab: total calls, pass/fail/stop rates, decision speed, cost."""
+    return analytics.overview(mongo.db)
+
+
+@app.get("/analytics/trends")
+def analytics_trends(days: int = Query(30, ge=1, le=365)) -> list[dict]:
+    """Trends tab: daily calls, pass rate, decision speed, and frustration."""
+    since = datetime.now(timezone.utc) - timedelta(days=days)
+    return analytics.trends(mongo.db, since)
+
+
+@app.get("/analytics/risk")
+def analytics_risk() -> dict:
+    """Risk tab: fail rate by scenario and difficulty, and red flags on failed calls."""
+    return analytics.risk(mongo.db, settings.analytics_min_group_size)
+
+
+@app.get("/analytics/wellbeing")
+def analytics_wellbeing() -> dict:
+    """Wellbeing tab: safe-word stops, peak frustration, and how calls ended."""
+    return analytics.wellbeing(mongo.db)
+
+
+@app.get("/analytics/operations")
+def analytics_operations() -> dict:
+    """Operations tab: cost per call, voice minutes, and response latency."""
+    return analytics.operations(mongo.db)
