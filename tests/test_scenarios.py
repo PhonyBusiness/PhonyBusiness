@@ -1,4 +1,4 @@
-"""Shape checks for the scenario configs in backend/scenarios."""
+"""Shape checks for the scenario configs in content/scenarios."""
 
 import json
 import re
@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pytest
 
-SCENARIO_DIR = Path(__file__).resolve().parents[1] / "backend" / "scenarios"
+SCENARIO_DIR = Path(__file__).resolve().parents[1] / "content" / "scenarios"
 SCENARIO_FILES = sorted(SCENARIO_DIR.glob("*.json"))
 
 REQUIRED_FIELDS = {

@@ -1,5 +1,9 @@
 # Scenarios
 
+Reference content for later features. The MVP backend uses the smaller
+configs in `backend/scenarios.py`; these files hold the FTC-based detail
+(red flag ids, difficulty, stages, sources) to fold in once the basic loop works.
+
 One JSON file per practice-call scenario. Every agency, company, person, and
 phone number is fictional. Phone numbers use the 555-0100 to 555-0199 range
 reserved for fiction. Scripts follow what the FTC documents about each scam:
