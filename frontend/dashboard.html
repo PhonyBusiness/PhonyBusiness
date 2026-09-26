@@ -12,9 +12,12 @@
     <header class="dash-header">
       <div>
         <h1>Scam call trends</h1>
-        <p class="muted">Practice call results across everyone. Updates every 5 seconds.</p>
+        <p class="muted">Practice call results across everyone.</p>
       </div>
-      <a href="index.html">Try a practice call →</a>
+      <div class="dash-actions">
+        <button id="btn-refresh" class="btn primary">Refresh</button>
+        <a href="index.html">Try a practice call →</a>
+      </div>
     </header>
 
     <p id="notice" class="notice" hidden></p>
@@ -32,21 +35,49 @@
         <p class="tile-label">Fail rate</p>
         <p id="stat-fail" class="tile-value">–</p>
       </div>
+      <div class="tile">
+        <p class="tile-label">Avg. turn people decide</p>
+        <p id="stat-turn" class="tile-value">–</p>
+      </div>
+      <div class="tile">
+        <p class="tile-label">Safe-word stops</p>
+        <p id="stat-stops" class="tile-value">–</p>
+      </div>
     </section>
 
     <section class="charts">
       <figure class="card">
-        <figcaption>Fail rate by scenario</figcaption>
-        <div class="chart-box"><canvas id="chart-scenario"></canvas></div>
+        <figcaption>Pass rate over time</figcaption>
+        <div class="chart-box">
+          <canvas id="chart-passrate"></canvas>
+          <p class="empty" hidden>No calls yet.</p>
+        </div>
       </figure>
       <figure class="card">
         <figcaption>Calls per day</figcaption>
-        <div class="chart-box"><canvas id="chart-daily"></canvas></div>
+        <div class="chart-box">
+          <canvas id="chart-daily"></canvas>
+          <p class="empty" hidden>No calls yet.</p>
+        </div>
+      </figure>
+      <figure class="card">
+        <figcaption>Red flags that fool people most <span class="muted">· failed calls</span></figcaption>
+        <div class="rank-box">
+          <ol id="rank-flags" class="rank"></ol>
+          <p class="empty" hidden>No red flags recorded yet.</p>
+        </div>
+      </figure>
+      <figure class="card">
+        <figcaption>Scams people fall for most <span class="muted">· fail rate</span></figcaption>
+        <div class="rank-box">
+          <ol id="rank-scenarios" class="rank"></ol>
+          <p class="empty" hidden>Shown once a scenario has at least 5 calls.</p>
+        </div>
       </figure>
     </section>
 
     <section class="card">
-      <h2>Recent calls</h2>
+      <h2>Recent calls <span class="muted">· click a call for details</span></h2>
       <div class="table-wrap">
         <table>
           <thead>
@@ -57,6 +88,34 @@
           </tbody>
         </table>
       </div>
+    </section>
+
+    <section id="detail" class="card" hidden>
+      <div class="detail-header">
+        <div>
+          <h2 id="detail-title">Call detail</h2>
+          <p id="detail-sub" class="muted"></p>
+        </div>
+        <button id="btn-close-detail" class="close" aria-label="Close call detail">✕</button>
+      </div>
+
+      <div class="facts">
+        <div><p class="tile-label">Result</p><p id="detail-result"></p></div>
+        <div><p class="tile-label">Call length</p><p id="detail-duration" class="fact-value">–</p></div>
+        <div><p class="tile-label">Decided at</p><p id="detail-decided" class="fact-value">–</p></div>
+        <div><p class="tile-label">Ended by</p><p id="detail-ended" class="fact-value">–</p></div>
+      </div>
+
+      <figure class="detail-chart">
+        <figcaption>Caller frustration during the call</figcaption>
+        <div class="chart-box">
+          <canvas id="chart-frustration"></canvas>
+          <p class="empty" hidden>No frustration data for this call.</p>
+        </div>
+      </figure>
+
+      <h3>Red flags and what to do</h3>
+      <ul id="detail-tips" class="tips"></ul>
     </section>
   </main>
 
