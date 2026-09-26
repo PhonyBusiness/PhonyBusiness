@@ -1,11 +1,28 @@
 # PhonyBusiness
 
-Opt-in voice scam simulation and awareness training.
+Practice spotting phone scams before a real one catches you off guard.
 
-This initial scaffold contains a Streamlit home page and a FastAPI health endpoint.
-It does not enroll residents, store data, place calls, or connect to external services.
+PhonyBusiness puts you on a realistic simulated phone call with an AI "scammer"
+running one of many common scripts — government imposters, tech support scams,
+fake family emergencies, and more. If you slip up, the call pauses and coaches
+you through what to watch for next time. If you handle it well, you get a recap
+of exactly what you did right. No real phone number, no real risk, just practice.
 
-## Local setup
+## Features
+
+- Realistic, voice-driven scam call simulations across multiple scenarios and difficulty levels
+- Live coaching the moment a red flag is missed, with specific do/don't guidance
+- A post-call recap summarizing what happened and what to remember
+- A trends dashboard (planned) to see how practice pays off over time
+
+## Tech stack
+
+- **Backend:** FastAPI, MongoDB
+- **Voice AI:** ElevenLabs Conversational AI
+- **Scoring:** Google Gemini
+- **Frontend:** Streamlit
+
+## Getting started
 
 Requires Python 3.12+ and [uv](https://docs.astral.sh/uv/getting-started/installation/).
 
@@ -13,64 +30,73 @@ Requires Python 3.12+ and [uv](https://docs.astral.sh/uv/getting-started/install
 uv sync
 ```
 
-Start the frontend:
-
-```sh
-uv run streamlit run app.py
-```
-
-In another terminal, start the backend:
+Copy `.env.example` to `.env` and fill in your own credentials, then start the backend:
 
 ```sh
 uv run uvicorn backend.main:app --reload
+```
+
+In another terminal, start the frontend:
+
+```sh
+uv run streamlit run app.py
 ```
 
 - Frontend: http://localhost:8501
 - API health: http://localhost:8000/health
 - API documentation: http://localhost:8000/docs
 
-The two services run independently in this initial scaffold.
-
-## Files
+## Project layout
 
 ```text
 app.py              Streamlit frontend entry point
 backend/
-  __init__.py
-  main.py           FastAPI application and health endpoint
-pyproject.toml      Dependencies and development tooling
-.python-version     Default Python version for uv
-.env.example        Placeholders for future integration credentials
+  config.py            Environment-backed settings
+  database.py          MongoDB client and call-record operations
+  deps.py              Shared settings/database instances used across routes
+  elevenlabs_client.py ElevenLabs integration
+  main.py              FastAPI application setup and router registration
+  routers/
+    calls.py           Scenario listing and call lifecycle routes
+    tools.py           Live in-call agent tool routes
+  scenarios.py         Scam call scenario configs
+  tips.py              Red-flag guidance shown after a call
+pyproject.toml      Dependencies
+uv.lock              Locked dependency versions
+.env.example         Required environment variables
 ```
 
-All frontend work belongs in Streamlit. FastAPI will handle backend operations
-and provider webhooks. Planned integrations are ElevenLabs, Twilio, Gemini,
-and MongoDB Atlas.
+## Backend API
 
-The starter does not load environment files yet. When integrations are added,
-keep real credentials in an untracked `.env` or deployment secrets.
+| Method & path | Purpose |
+| --- | --- |
+| `GET /health` | Service and database health check |
+| `GET /scenarios` | List available scam scenarios |
+| `POST /calls/start` | Start a new practice call |
+| `POST /calls/{call_id}/session` | Link an active call session for tracking |
+| `POST /calls/{call_id}/hangup` | End a call |
+| `POST /tools/record_outcome` | Record how a call went and surface relevant tips |
+| `GET /calls/{call_id}` | Retrieve a call's outcome, score, and tips |
+
+## Environment variables
+
+See `.env.example` for the full list. At minimum you'll need a MongoDB
+connection string and ElevenLabs credentials. Gemini is used for post-call
+scoring.
+
 
 ## Development
 
-Populate `.env` using the keys in `.env.example`, then run the live integration checks:
+Populate `.env`, then run the live integration checks:
 
 ```sh
 uv sync
 RUN_INTEGRATION_TESTS=1 uv run pytest tests/test_integrations.py -v --tb=no
 ```
 
-The seven checks cover MongoDB connectivity, Twilio account status, phone number
-ownership and voice/SMS capabilities, Twilio Verify service access, ElevenLabs
-user and agent access, and Gemini model listing. Missing values fail their checks.
-Shell environment variables override `.env` values.
+These checks confirm your credentials work (MongoDB, ElevenLabs, Gemini) without
+placing calls, generating content, or writing data. Normal `uv run pytest` skips
+them unless `RUN_INTEGRATION_TESTS=1` is set.
 
-These checks do not place calls, send messages, generate content, or write data.
-They do not prove end-to-end call routing, model generation quota, or database
-read/write permissions. Restricted ElevenLabs keys need user-read and agent-read
-access for both checks to pass. Provider response bodies and credentials are not
-printed; avoid pytest `--showlocals` when working with secrets.
-
-Normal `uv run pytest` skips live checks unless `RUN_INTEGRATION_TESTS=1` is set.
-
-Commit the generated `uv.lock` after the first successful `uv sync` to make
-dependency resolution reproducible.
+Commit `uv.lock` after `uv sync` picks up a `pyproject.toml` change, so dependency
+resolution stays reproducible for everyone on the team.
