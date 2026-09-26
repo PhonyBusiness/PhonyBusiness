@@ -122,7 +122,14 @@ $("btn-accept").onclick = async () => {
         startTimer();
       },
       onStatusChange: ({ status }) => console.log("[call] status:", status),
-      onDisconnect: () => endCall(),
+      onDisconnect: (details) => {
+        // When the agent ends the call (after a fail, pass, or safe word), mark it
+        // ended so the recap gets tips. The backend keeps any recorded outcome.
+        const hangup = details?.reason === "agent" && !callEnded
+          ? api(`/calls/${callId}/hangup`, {}).catch(() => null)
+          : null;
+        endCall(hangup);
+      },
       onError: () => ($("call-status").textContent = "Connection problem"),
     });
     // The user may have hung up while we were still connecting.
