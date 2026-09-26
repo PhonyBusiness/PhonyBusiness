@@ -90,6 +90,10 @@ TIP_BANK = {
         "do": "Call your utility using the number on your bill or its official website to check your account.",
         "dont": "Don't let a threat of an immediate shutoff rush you into paying on the phone.",
     },
+    "Insists you pay before a crew arrives": {
+        "do": "Hang up and call the number on your utility bill to ask whether a shutoff is really scheduled.",
+        "dont": "Don't pay on the phone because a caller says a crew is on the way to cut your service.",
+    },
     "Demands payment by payment app, gift card, or store barcode": {
         "do": "Pay utility bills only through the methods listed on your bill or the utility's official website.",
         "dont": "Don't pay a bill with a payment app, gift card, or a barcode someone texts you.",
@@ -145,6 +149,10 @@ TIP_BANK = {
     "Unexpected call about your phone account": {
         "do": "Contact your phone company through the number on your bill or its official app to check your account.",
         "dont": "Don't trust an unexpected caller who says there's a problem or a special offer on your phone account.",
+    },
+    "Asks for the code texted to your phone": {
+        "do": "Treat a code texted to your phone as a password that protects your number, and keep it to yourself.",
+        "dont": "Don't read a texted code to a caller; scammers use it to take over your phone number and accounts.",
     },
     "Asks for your account PIN": {
         "do": "Set a PIN on your phone account and keep it private.",

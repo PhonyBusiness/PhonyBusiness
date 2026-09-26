@@ -94,7 +94,7 @@ SCENARIOS = [
         "red_flags": [
             "Threat to shut off service within the hour",
             "Demands payment by payment app, gift card, or store barcode",
-            "Insists you pay during this call",
+            "Insists you pay before a crew arrives",
         ],
         "caller_display_name": "Crestview Power",
     },
@@ -153,7 +153,7 @@ SCENARIOS = [
         "ask": "read back the verification code texted to you and share your account PIN",
         "red_flags": [
             "Unexpected call about your phone account",
-            "Asks for a verification code",
+            "Asks for the code texted to your phone",
             "Asks for your account PIN",
         ],
         "caller_display_name": "Tellura Wireless",
