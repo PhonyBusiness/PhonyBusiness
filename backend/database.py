@@ -81,3 +81,23 @@ class MongoDatabase:
             ],
             return_document=ReturnDocument.AFTER,
         )
+
+    def get_call(self, call_id: ObjectId) -> dict | None:
+        return self.db["calls"].find_one({"_id": call_id})
+
+    def record_outcome(
+        self, call_id: ObjectId, result: str, flags: list[str], turn: int
+    ) -> dict | None:
+        """Save the live outcome reported by the agent mid-call. Always authoritative."""
+        return self.db["calls"].find_one_and_update(
+            {"_id": call_id},
+            {
+                "$set": {
+                    "outcome": result,
+                    "flags": flags,
+                    "turn": turn,
+                    "updated_at": datetime.now(timezone.utc),
+                }
+            },
+            return_document=ReturnDocument.AFTER,
+        )
