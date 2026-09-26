@@ -9,3 +9,4 @@ htmlcov/
 !.env.example
 .streamlit/secrets.toml
 .DS_Store
+*.egg-info/
