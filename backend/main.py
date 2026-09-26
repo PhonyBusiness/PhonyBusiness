@@ -1,11 +1,124 @@
 """FastAPI entry point for PhonyBusiness."""
 
-from fastapi import FastAPI
+from contextlib import asynccontextmanager
+from datetime import datetime, timezone
 
-app = FastAPI(title="PhonyBusiness API", version="0.1.0")
+from bson import ObjectId
+from bson.errors import InvalidId
+from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel
+
+from backend.config import get_settings
+from backend.database import MongoDatabase
+from backend.elevenlabs_client import ElevenLabsError, get_signed_url
+from backend.scenarios import get_scenario, list_scenarios
+
+
+settings = get_settings()
+mongo = MongoDatabase(settings.mongodb_uri)
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """Open and verify external connections when the API process starts."""
+    mongo.connect()
+    app.state.mongo = mongo
+    try:
+        yield
+    finally:
+        mongo.close()
+
+
+app = FastAPI(title="PhonyBusiness API", version="0.1.0", lifespan=lifespan)
 
 
 @app.get("/health")
 def health() -> dict[str, str]:
-    """Report that the API process is running."""
+    """Report that the API process and database connection are running."""
+    return {
+        "status": "ok",
+        "mongodb": "connected" if mongo.is_connected else "disconnected",
+    }
+
+
+class ScenarioSummary(BaseModel):
+    name: str
+    display_name: str
+
+
+@app.get("/scenarios", response_model=list[ScenarioSummary])
+def scenarios() -> list[dict]:
+    """List scenarios for the start screen's dropdown (names only, no spoilers)."""
+    return list_scenarios()
+
+
+class StartCallRequest(BaseModel):
+    first_name: str
+    scenario: str
+    difficulty: str
+
+
+class StartCallResponse(BaseModel):
+    call_id: str
+    signed_url: str
+    dynamic_variables: dict[str, str]
+
+
+@app.post("/calls/start", response_model=StartCallResponse)
+def start_call(payload: StartCallRequest) -> StartCallResponse:
+    """Look up the chosen scenario, create a call record, and hand back a signed ElevenLabs session."""
+    scenario = get_scenario(payload.scenario)
+    if scenario is None:
+        raise HTTPException(status_code=404, detail="Unknown scenario")
+
+    dynamic_variables = {
+        "first_name": payload.first_name,
+        "persona": scenario["persona"],
+        "ask": scenario["ask"],
+        "red_flags": ", ".join(scenario["red_flags"]),
+        "difficulty": payload.difficulty,
+        "safe_word": settings.safe_word,
+    }
+
+    now = datetime.now(timezone.utc)
+    call_id = mongo.insert_call(
+        {
+            "scenario_name": scenario["name"],
+            "first_name": payload.first_name,
+            "dynamic_variables": dynamic_variables,
+            "red_flags": scenario["red_flags"],
+            "conversation_id": None,
+            "status": "started",
+            "outcome": None,
+            "flags": None,
+            "score": None,
+            "created_at": now,
+            "updated_at": now,
+        }
+    )
+
+    try:
+        signed_url = get_signed_url(settings.elevenlabs_agent_id, settings.elevenlabs_api_key)
+    except ElevenLabsError as exc:
+        raise HTTPException(status_code=503, detail=str(exc)) from exc
+
+    return StartCallResponse(call_id=call_id, signed_url=signed_url, dynamic_variables=dynamic_variables)
+
+
+class SessionRequest(BaseModel):
+    conversation_id: str
+
+
+@app.post("/calls/{call_id}/session")
+def set_call_session(call_id: str, payload: SessionRequest) -> dict[str, str]:
+    """Record the ElevenLabs conversation_id so the post-call webhook can match it later."""
+    try:
+        oid = ObjectId(call_id)
+    except InvalidId as exc:
+        raise HTTPException(status_code=400, detail="Invalid call_id") from exc
+
+    found = mongo.set_conversation_id(oid, payload.conversation_id)
+    if not found:
+        raise HTTPException(status_code=404, detail="Call not found")
+
     return {"status": "ok"}

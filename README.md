@@ -37,7 +37,9 @@ The two services run independently in this initial scaffold.
 app.py              Streamlit frontend entry point
 backend/
   __init__.py
-  main.py           FastAPI application and health endpoint
+  config.py         Environment-backed settings
+  database.py       MongoDB client lifecycle and ping
+  main.py           FastAPI application, startup checks, and health endpoint
 pyproject.toml      Dependencies and development tooling
 .python-version     Default Python version for uv
 .env.example        Placeholders for future integration credentials
