@@ -7,10 +7,11 @@ from datetime import datetime, timezone
 
 from bson import ObjectId
 from bson.errors import InvalidId
-from fastapi import FastAPI, HTTPException, Request
+from fastapi import FastAPI, HTTPException, Query, Request
 from fastapi.responses import PlainTextResponse
 from pydantic import BaseModel, field_validator
 
+from backend import analytics
 from backend.config import get_settings
 from backend.database import MongoDatabase
 from backend.elevenlabs_client import ElevenLabsError, get_signed_url
@@ -254,3 +255,18 @@ async def post_call_webhook(request: Request) -> dict[str, str]:
         mongo.close_call_from_webhook(call["_id"], conversation)
 
     return {"status": "stored", "conversation_id": conversation_id}
+
+
+@app.get("/analytics/conversations")
+def list_conversations(limit: int = Query(20, ge=1, le=100)) -> list[dict]:
+    """Recent calls feed: scenario, outcome, flags, and time. No names or transcripts."""
+    return analytics.recent_conversations(mongo.db, limit)
+
+
+@app.get("/analytics/conversations/{conversation_id}")
+def conversation_analytics(conversation_id: str) -> dict:
+    """Per-conversation analytics: outcome, decision timing, frustration curve, tips, latency, cost."""
+    conversation = mongo.get_conversation(conversation_id)
+    if conversation is None:
+        raise HTTPException(status_code=404, detail="Conversation not found")
+    return analytics.conversation_detail(conversation)
