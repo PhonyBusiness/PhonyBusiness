@@ -82,6 +82,9 @@ class MongoDatabase:
             return_document=ReturnDocument.AFTER,
         )
 
+    def get_call(self, call_id: ObjectId) -> dict | None:
+        return self.db["calls"].find_one({"_id": call_id})
+
     def record_outcome(
         self, call_id: ObjectId, result: str, flags: list[str], turn: int
     ) -> dict | None:

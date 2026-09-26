@@ -7,7 +7,7 @@ from bson import ObjectId
 from bson.errors import InvalidId
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import PlainTextResponse
-from pydantic import BaseModel
+from pydantic import BaseModel, field_validator
 
 from backend.config import get_settings
 from backend.database import MongoDatabase
@@ -62,6 +62,7 @@ class StartCallRequest(BaseModel):
 
 class StartCallResponse(BaseModel):
     call_id: str
+    caller_name: str
     signed_url: str
     dynamic_variables: dict[str, str]
 
@@ -107,7 +108,12 @@ def start_call(payload: StartCallRequest) -> StartCallResponse:
     # Added after the Mongo insert so the stored snapshot doesn't duplicate the doc's own _id.
     dynamic_variables["call_id"] = call_id
 
-    return StartCallResponse(call_id=call_id, signed_url=signed_url, dynamic_variables=dynamic_variables)
+    return StartCallResponse(
+        call_id=call_id,
+        caller_name=scenario["caller_display_name"],
+        signed_url=signed_url,
+        dynamic_variables=dynamic_variables,
+    )
 
 
 class SessionRequest(BaseModel):
@@ -150,6 +156,13 @@ class RecordOutcomeRequest(BaseModel):
     flags: list[str]
     turn: int
 
+    @field_validator("flags", mode="before")
+    @classmethod
+    def split_comma_separated_flags(cls, value: str | list[str]) -> list[str]:
+        if isinstance(value, str):
+            return [flag.strip() for flag in value.split(",") if flag.strip()]
+        return value
+
 
 @app.post("/tools/record_outcome", response_class=PlainTextResponse)
 def record_outcome(payload: RecordOutcomeRequest) -> str:
@@ -168,3 +181,42 @@ def record_outcome(payload: RecordOutcomeRequest) -> str:
         return "No specific tips for this call."
 
     return " ".join(f"{tip['label']}. Do: {tip['do']} Don't: {tip['dont']}" for tip in tips)
+
+
+class TipItem(BaseModel):
+    do: str
+    dont: str
+
+
+class CallDetailResponse(BaseModel):
+    call_id: str
+    status: str
+    outcome: str | None
+    score: str | None
+    flags: list[str] | None
+    tips: list[TipItem] | None
+
+
+@app.get("/calls/{call_id}", response_model=CallDetailResponse)
+def get_call(call_id: str) -> CallDetailResponse:
+    """Recap screen data. Never exposes the transcript, dynamic_variables, or first_name."""
+    try:
+        oid = ObjectId(call_id)
+    except InvalidId as exc:
+        raise HTTPException(status_code=400, detail="Invalid call_id") from exc
+
+    call = mongo.get_call(oid)
+    if call is None:
+        raise HTTPException(status_code=404, detail="Call not found")
+
+    flags = call.get("flags")
+    tips = [{"do": tip["do"], "dont": tip["dont"]} for tip in get_tips(flags)] if flags else None
+
+    return CallDetailResponse(
+        call_id=call_id,
+        status=call["status"],
+        outcome=call.get("outcome"),
+        score=call.get("score"),
+        flags=flags,
+        tips=tips,
+    )
