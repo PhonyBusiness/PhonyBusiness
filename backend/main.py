@@ -5,7 +5,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 
 from backend.deps import mongo
-from backend.routers import calls, tools
+from backend.routers import analytics, calls, tools, webhooks
 
 
 @asynccontextmanager
@@ -33,3 +33,5 @@ def health() -> dict[str, str]:
 
 app.include_router(calls.router)
 app.include_router(tools.router)
+app.include_router(webhooks.router)
+app.include_router(analytics.router)
