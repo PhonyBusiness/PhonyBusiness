@@ -6,12 +6,14 @@ from datetime import datetime, timezone
 from bson import ObjectId
 from bson.errors import InvalidId
 from fastapi import FastAPI, HTTPException
+from fastapi.responses import PlainTextResponse
 from pydantic import BaseModel
 
 from backend.config import get_settings
 from backend.database import MongoDatabase
 from backend.elevenlabs_client import ElevenLabsError, get_signed_url
 from backend.scenarios import get_scenario, list_scenarios
+from backend.tips import get_tips
 
 
 settings = get_settings()
@@ -102,6 +104,9 @@ def start_call(payload: StartCallRequest) -> StartCallResponse:
     except ElevenLabsError as exc:
         raise HTTPException(status_code=503, detail=str(exc)) from exc
 
+    # Added after the Mongo insert so the stored snapshot doesn't duplicate the doc's own _id.
+    dynamic_variables["call_id"] = call_id
+
     return StartCallResponse(call_id=call_id, signed_url=signed_url, dynamic_variables=dynamic_variables)
 
 
@@ -137,3 +142,29 @@ def hangup_call(call_id: str) -> dict[str, str | None]:
         raise HTTPException(status_code=404, detail="Call not found")
 
     return {"call_id": call_id, "status": call["status"], "outcome": call["outcome"]}
+
+
+class RecordOutcomeRequest(BaseModel):
+    call_id: str
+    result: str
+    flags: list[str]
+    turn: int
+
+
+@app.post("/tools/record_outcome", response_class=PlainTextResponse)
+def record_outcome(payload: RecordOutcomeRequest) -> str:
+    """Save the live outcome reported by the agent and return tips for it to read aloud."""
+    try:
+        oid = ObjectId(payload.call_id)
+    except InvalidId as exc:
+        raise HTTPException(status_code=400, detail="Invalid call_id") from exc
+
+    call = mongo.record_outcome(oid, payload.result, payload.flags, payload.turn)
+    if call is None:
+        raise HTTPException(status_code=404, detail="Call not found")
+
+    tips = get_tips(payload.flags)
+    if not tips:
+        return "No specific tips for this call."
+
+    return " ".join(f"{tip['label']}. Do: {tip['do']} Don't: {tip['dont']}" for tip in tips)
