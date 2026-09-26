@@ -1,0 +1,197 @@
+/* Start-screen mascots. The gator's mood follows #stage[data-level] (0 = suspicious,
+   3 = full evil grin); the elder and the page theme follow body[data-difficulty]. */
+
+.stage {
+  position: relative;
+  padding: 12px 8px 0;
+  border-radius: 18px;
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.08));
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  transition: background 0.6s, border-color 0.6s, box-shadow 0.6s;
+}
+
+.bubble {
+  position: relative;
+  width: fit-content;
+  max-width: 85%;
+  margin: 0 0 6px 8px;
+  padding: 8px 12px;
+  border-radius: 14px;
+  background: #f5f5f5;
+  color: #111;
+  font-size: 14px;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+  transition: background 0.6s, color 0.6s;
+}
+.bubble::after {
+  content: "";
+  position: absolute;
+  left: 36px;
+  bottom: -8px;
+  border: 8px solid transparent;
+  border-bottom: 0;
+  border-top-color: var(--bubble-bg, #f5f5f5);
+}
+.bubble.pop { animation: pop 0.25s ease-out; }
+@keyframes pop {
+  from { transform: scale(0.92); }
+  to   { transform: scale(1); }
+}
+
+.cast { display: flex; justify-content: space-between; align-items: flex-end; }
+.cast svg { width: 46%; height: auto; display: block; overflow: visible; }
+
+/* ---------- Gator ---------- */
+
+.g-skin { fill: #5cae4a; }
+.g-line { fill: none; stroke: #1f3d22; stroke-width: 3.5; stroke-linecap: round; stroke-linejoin: round; }
+.g-iris { fill: #f6d44a; transition: fill 0.6s; }
+.g-pupil { fill: #1b1b1b; transition: fill 0.6s; }
+.g-tooth { fill: #fff; stroke: #1f3d22; stroke-width: 1; stroke-linejoin: round; }
+.g-lid { fill: #4f9e3f; stroke: #1f3d22; stroke-width: 2.5; }
+.g-brow { fill: none; stroke: #1f3d22; stroke-width: 5; stroke-linecap: round; }
+
+.g-lid, .g-brow, .g-pupil, .g-head {
+  transform-box: fill-box;
+  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.g-lid { transform-origin: 50% 100%; }
+.g-brow, .g-pupil { transform-origin: center; }
+.g-head { transform-origin: 50% 100%; }
+
+.g-mouth { opacity: 0; transition: opacity 0.2s; }
+.g-glint { fill: #fff; opacity: 0; transform-box: fill-box; transform-origin: center; }
+
+/* 0: suspicious squint, one brow up, shifty eyes */
+.stage[data-level="0"] .g-lid     { transform: translateY(11px); }
+.stage[data-level="0"] .g-brow-l  { transform: translateY(-5px) rotate(-10deg); }
+.stage[data-level="0"] .g-brow-r  { transform: translateY(3px); }
+.stage[data-level="0"] .g-pupil   { animation: shifty 2.4s ease-in-out infinite; }
+.stage[data-level="0"] .m0        { opacity: 1; }
+
+/* 1: a little smirk */
+.stage[data-level="1"] .g-lid-l   { transform: translateY(9px) rotate(10deg); }
+.stage[data-level="1"] .g-lid-r   { transform: translateY(9px) rotate(-10deg); }
+.stage[data-level="1"] .g-brow-l  { transform: translateY(2px) rotate(10deg); }
+.stage[data-level="1"] .g-brow-r  { transform: translateY(2px) rotate(-10deg); }
+.stage[data-level="1"] .m1        { opacity: 1; }
+
+/* 2: toothy smirk, head tilts */
+.stage[data-level="2"] .g-lid-l   { transform: translateY(9px) rotate(18deg); }
+.stage[data-level="2"] .g-lid-r   { transform: translateY(9px) rotate(-18deg); }
+.stage[data-level="2"] .g-brow-l  { transform: translateY(4px) rotate(18deg); }
+.stage[data-level="2"] .g-brow-r  { transform: translateY(4px) rotate(-18deg); }
+.stage[data-level="2"] .g-head    { transform: rotate(-3deg); }
+.stage[data-level="2"] .m2        { opacity: 1; }
+
+/* 3: comically evil grin, chuckling, gleaming tooth */
+.stage[data-level="3"] .g-lid-l   { transform: translateY(11px) rotate(24deg); }
+.stage[data-level="3"] .g-lid-r   { transform: translateY(11px) rotate(-24deg); }
+.stage[data-level="3"] .g-brow-l  { transform: translateY(5px) rotate(26deg); }
+.stage[data-level="3"] .g-brow-r  { transform: translateY(5px) rotate(-26deg); }
+.stage[data-level="3"] .g-pupil   { transform: scaleX(0.7); }
+.stage[data-level="3"] .g-head    { animation: chuckle 0.3s ease-in-out infinite alternate; }
+.stage[data-level="3"] .m3        { opacity: 1; }
+.stage[data-level="3"] .g-glint   { animation: glint 1.6s ease-in-out infinite; }
+
+@keyframes shifty {
+  0%, 20%   { transform: translateX(-4px); }
+  45%, 65%  { transform: translateX(4px); }
+  90%, 100% { transform: translateX(-4px); }
+}
+@keyframes chuckle {
+  from { transform: rotate(-4deg) translateY(0); }
+  to   { transform: rotate(-4deg) translateY(-3px); }
+}
+@keyframes glint {
+  0%, 60%, 100% { opacity: 0; transform: scale(0.3) rotate(0deg); }
+  75%           { opacity: 1; transform: scale(1) rotate(45deg); }
+}
+
+/* ---------- Elder ---------- */
+
+.e-line { fill: none; stroke: #3b2a20; stroke-width: 3; stroke-linecap: round; }
+.e-brow { fill: none; stroke: #b8b8c4; stroke-width: 3.5; stroke-linecap: round; transform-box: fill-box; transform-origin: center; transition: transform 0.35s; }
+.e-mouth, .e-eyes-happy, .e-eyes-dot, .e-sweat { opacity: 0; transition: opacity 0.25s; }
+.e-sweat { fill: #7cc6ff; }
+.e-eyes-dot { transform-box: fill-box; transform-origin: center; animation: blink 4s infinite; }
+.e-body { transform-box: fill-box; transform-origin: 50% 100%; animation: breathe 3s ease-in-out infinite; }
+
+/* easy (and default): cheerful and trusting */
+body:not([data-difficulty="medium"]):not([data-difficulty="hard"]) .e-eyes-happy,
+body:not([data-difficulty="medium"]):not([data-difficulty="hard"]) .e-happy { opacity: 1; }
+
+/* medium: curious */
+body[data-difficulty="medium"] .e-eyes-dot,
+body[data-difficulty="medium"] .e-curious { opacity: 1; }
+body[data-difficulty="medium"] .e-brow-l { transform: translateY(-3px); }
+
+/* hard: worried, sweating, trembling */
+body[data-difficulty="hard"] .e-eyes-dot,
+body[data-difficulty="hard"] .e-worried,
+body[data-difficulty="hard"] .e-sweat { opacity: 1; }
+body[data-difficulty="hard"] .e-brow-l { transform: rotate(-16deg); }
+body[data-difficulty="hard"] .e-brow-r { transform: rotate(16deg); }
+body[data-difficulty="hard"] .e-body { animation: tremble 0.15s linear infinite; }
+
+@keyframes breathe {
+  0%, 100% { transform: scaleY(1); }
+  50%      { transform: scaleY(1.015); }
+}
+@keyframes blink {
+  0%, 94%, 100% { transform: scaleY(1); }
+  97%           { transform: scaleY(0.1); }
+}
+@keyframes tremble {
+  0%, 100% { transform: translateX(0); }
+  25%      { transform: translateX(-1px); }
+  75%      { transform: translateX(1px); }
+}
+
+/* ---------- Difficulty themes ---------- */
+
+body[data-difficulty="easy"]   { --glow: rgba(52, 199, 89, 0.16);  --accent: #25935d; }
+body[data-difficulty="medium"] { --glow: rgba(250, 178, 25, 0.16); --accent: #d9781a; }
+body[data-difficulty="hard"]   { --glow: rgba(255, 30, 30, 0.38);  --accent: #d91e2a; }
+
+/* Hard: red vignette that pulses, glowing red eyes, menacing speech bubble */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  box-shadow: inset 0 0 140px rgba(255, 0, 0, 0.45);
+  opacity: 0;
+  transition: opacity 0.6s;
+}
+body[data-difficulty="hard"]::after { opacity: 1; animation: menace 2.4s ease-in-out infinite; }
+@keyframes menace {
+  0%, 100% { opacity: 0.6; }
+  50%      { opacity: 1; }
+}
+
+body[data-difficulty="hard"] h1 { text-shadow: 0 0 18px rgba(255, 40, 40, 0.7); }
+body[data-difficulty="hard"] .stage {
+  background: linear-gradient(to bottom, rgba(120, 0, 0, 0.25), rgba(40, 0, 0, 0.6));
+  border-color: rgba(255, 60, 60, 0.4);
+  box-shadow: 0 0 28px rgba(255, 0, 0, 0.25);
+}
+body[data-difficulty="hard"] .bubble { background: #1a0000; color: #ff5a5a; --bubble-bg: #1a0000; }
+body[data-difficulty="hard"] .g-iris { fill: #2a0505; }
+body[data-difficulty="hard"] .g-pupil { fill: #ff2a2a; filter: drop-shadow(0 0 3px #ff0000); }
+body[data-difficulty="hard"] input,
+body[data-difficulty="hard"] select { border-color: rgba(255, 60, 60, 0.45); }
+
+.stage.shake { animation: shake 0.4s; }
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20%      { transform: translateX(-6px) rotate(-1deg); }
+  40%      { transform: translateX(6px) rotate(1deg); }
+  60%      { transform: translateX(-4px); }
+  80%      { transform: translateX(4px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stage *, .stage, body::after { animation: none !important; }
+}

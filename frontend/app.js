@@ -65,6 +65,74 @@ async function loadScenarios() {
   }
 }
 
+// ---------- Mascots ----------
+// The gator gets one step more evil for each detail filled in (0-3).
+
+const SCENARIO_LINES = {
+  benefits_imposter: "Your benefits are *very* important to me…",
+  tech_support: "Your computer has a virus. Probably.",
+  family_emergency: "Grandma? It's me… your grandson!",
+  tax_debt: "You owe taxes. Lots of them. Pay me.",
+  jury_duty_warrant: "Missed jury duty? Tsk tsk. There's a fine…",
+  bank_fraud_alert: "Your bank account is in danger… from me.",
+  order_refund: "About that order you never placed…",
+  utility_shutoff: "Nice lights you have. Shame if they went off.",
+  prize_sweepstakes: "Congratulations! You've won… a scam!",
+  health_benefits_card: "Your new health card just needs a few details…",
+  debt_relief: "Lower interest? Oh, I'll lower something…",
+  investment_opportunity: "Guaranteed returns. Trust me. Heh.",
+  phone_carrier: "Just read me that little code we sent…",
+};
+
+const DIFFICULTY = {
+  easy: { hint: "A clumsy scammer. The red flags are easy to spot.", line: "I'll go easy on you… for now." },
+  medium: { hint: "A smooth talker. Stay sharp.", line: "Let's make this interesting…" },
+  hard: { hint: "A ruthless pro. Pressure, urgency, no mercy.", line: "Heh heh heh. No mercy." },
+};
+
+const touched = { scenario: false, difficulty: false };
+
+function gatorLine(field, name) {
+  if (field === "name" && name) return `${name}… what a lovely name.`;
+  if (field === "scenario") return SCENARIO_LINES[$("scenario").value] || "Oh, I have just the story for you…";
+  if (field === "difficulty") return DIFFICULTY[$("difficulty").value]?.line;
+  return "Hmm… who's there?";
+}
+
+function updateGator(field) {
+  const name = $("name").value.trim();
+  $("stage").dataset.level = (name ? 1 : 0) + touched.scenario + touched.difficulty;
+  const bubble = $("gator-line");
+  bubble.textContent = gatorLine(field, name);
+  bubble.classList.remove("pop");
+  void bubble.offsetWidth; // restart the pop animation
+  bubble.classList.add("pop");
+}
+
+function applyDifficulty() {
+  const d = $("difficulty").value;
+  document.body.dataset.difficulty = d;
+  $("difficulty-hint").textContent = DIFFICULTY[d]?.hint || "";
+}
+
+$("name").addEventListener("input", () => updateGator("name"));
+$("scenario").addEventListener("change", () => {
+  touched.scenario = true;
+  updateGator("scenario");
+});
+$("difficulty").addEventListener("change", () => {
+  touched.difficulty = true;
+  applyDifficulty();
+  updateGator("difficulty");
+  if ($("difficulty").value === "hard") {
+    const stage = $("stage");
+    stage.classList.remove("shake");
+    void stage.offsetWidth;
+    stage.classList.add("shake");
+  }
+});
+applyDifficulty();
+
 $("btn-start").onclick = async () => {
   const firstName = $("name").value.trim();
   if (!firstName) {

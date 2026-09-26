@@ -1,10 +1,15 @@
 * { box-sizing: border-box; }
 [hidden] { display: none !important; }
 
+/* Theme colors; mascots.css changes them per difficulty. Registered so they animate. */
+@property --glow { syntax: "<color>"; inherits: true; initial-value: transparent; }
+@property --accent { syntax: "<color>"; inherits: true; initial-value: #2f7cf6; }
+
 body {
   margin: 0;
   min-height: 100vh;
-  background: #111;
+  background: radial-gradient(120% 60% at 50% 0%, var(--glow), transparent 70%) fixed, #111;
+  transition: --glow 0.6s, --accent 0.6s;
   color: #f5f5f5;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
@@ -33,7 +38,11 @@ input, select {
   border: 1px solid #333;
   background: #1d1d1d;
   color: #f5f5f5;
+  transition: border-color 0.6s;
 }
+input:focus, select:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+.hint { font-size: 13px; color: #9a9a9a; min-height: 1em; }
+body[data-difficulty="hard"] .hint { color: #ff6b61; }
 
 .btn {
   padding: 14px;
@@ -43,7 +52,7 @@ input, select {
   border-radius: 12px;
   cursor: pointer;
 }
-.btn.primary { background: #2f7cf6; color: #fff; }
+.btn.primary { background: var(--accent); color: #fff; }
 
 /* Caller avatar with pulsing ring while ringing */
 .avatar {
