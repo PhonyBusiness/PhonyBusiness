@@ -127,3 +127,16 @@ a.btn { text-align: center; text-decoration: none; }
 
 ul { margin: 0; padding-left: 20px; line-height: 1.5; }
 a { color: #6aa8ff; }
+
+/* Gemini's second opinion under the recap result. */
+.review {
+  margin: 0;
+  padding: 8px 12px;
+  border-left: 3px solid var(--accent);
+  background: #1b1b1b;
+  border-radius: 6px;
+  color: #cfcfcf;
+  font-size: 14px;
+  text-align: left;
+}
+.review.pending { color: #9a9a9a; font-style: italic; }

@@ -439,8 +439,12 @@ function listItems(id, items, build) {
   }));
 }
 
+// True while the recap waits for Gemini's review of the call.
+let reviewPending = false;
+
 function renderRecap(call) {
-  const outcome = call.score || call.outcome;
+  // A safe-word stop stays "stopped"; otherwise Gemini's rating wins once it arrives.
+  const outcome = call.outcome === "stopped" ? "stopped" : call.score || call.outcome;
   const badge = $("result-badge");
   badge.className = "badge";
   if (outcome === "pass" || outcome === "fail" || outcome === "caution") {
@@ -460,6 +464,13 @@ function renderRecap(call) {
   };
   $("result-text").textContent = text[outcome] || "Loading your results…";
   setRecapScene(outcome);
+
+  const review = $("review-line");
+  review.classList.toggle("pending", !call.score_reason);
+  review.textContent = call.score_reason
+    ? `AI review: ${call.score_reason}`
+    : "Getting a second opinion from AI review…";
+  review.hidden = outcome === "stopped" || !(call.score_reason || reviewPending);
 
   const flags = call.flags || [];
   listItems("flag-chips", flags, (li, flag) => (li.textContent = flag));
@@ -481,17 +492,19 @@ function renderRecap(call) {
 
 async function showRecap(initial) {
   recapScene = null;
+  reviewPending = false;
   renderRecap(initial);
   show("recap");
 
   // Fetch the result once the call is ended. Usually the first request is enough;
   // retry briefly (up to 3 times) only if the hangup hasn't been recorded yet.
   const id = callId;
+  let call = null;
   for (let i = 0; i < 3 && id === callId; i++) {
     try {
-      const call = await api(`/calls/${id}`);
+      call = await api(`/calls/${id}`);
       renderRecap(call);
-      if (call.status === "ended" && call.outcome) return;
+      if (call.status === "ended" && call.outcome) break;
     } catch {
       // Network hiccup; try again.
     }
@@ -499,7 +512,25 @@ async function showRecap(initial) {
   }
   if ($("result-badge").textContent === "…") {
     $("result-text").textContent = "Results aren't available right now.";
+    return;
   }
+
+  // Gemini reviews the call after ElevenLabs' post-call webhook arrives, which takes
+  // a few seconds. Wait up to ~30s for its rating; if it doesn't come, keep the result.
+  if (!call || call.outcome === "stopped" || call.score) return;
+  reviewPending = true;
+  renderRecap(call);
+  for (let i = 0; i < 10 && id === callId; i++) {
+    await new Promise((r) => setTimeout(r, 3000));
+    try {
+      call = await api(`/calls/${id}`);
+      if (call.score) break;
+    } catch {
+      // Keep waiting; the result already on screen stays.
+    }
+  }
+  reviewPending = false;
+  if (id === callId) renderRecap(call);
 }
 
 // ---------- Next steps ----------
