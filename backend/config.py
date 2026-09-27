@@ -23,6 +23,11 @@ class Settings:
         # Post-call scoring; leave the key unset to skip scoring.
         self.gemini_api_key = os.getenv("GEMINI_API_KEY", "").strip()
         self.gemini_model = os.getenv("GEMINI_MODEL", "gemini-3.8-flash").strip()
+        # Testing only: SCORING_PROVIDER=openai scores with any OpenAI-compatible API (e.g. Groq).
+        self.scoring_provider = os.getenv("SCORING_PROVIDER", "gemini").strip().lower()
+        self.scoring_base_url = os.getenv("SCORING_BASE_URL", "").strip()
+        self.scoring_api_key = os.getenv("SCORING_API_KEY", "").strip()
+        self.scoring_model = os.getenv("SCORING_MODEL", "").strip()
 
 
 @lru_cache

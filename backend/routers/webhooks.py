@@ -55,6 +55,10 @@ def score_and_save(payload: dict, conversation: dict) -> None:
     recorded = (conversation.get("outcome") or {}).get("result")
     if recorded == "stopped":
         return  # The safe word ends the call with no judgment, so it isn't scored.
-    score = score_call(payload, scenario, recorded, settings.gemini_api_key, settings.gemini_model)
+    if settings.scoring_provider == "openai":
+        score = score_call(payload, scenario, recorded, settings.scoring_api_key, settings.scoring_model,
+                           provider="openai", base_url=settings.scoring_base_url)
+    else:
+        score = score_call(payload, scenario, recorded, settings.gemini_api_key, settings.gemini_model)
     if score is not None:
         mongo.save_score(conversation["conversation_id"], conversation.get("call_id"), score)

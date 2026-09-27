@@ -86,18 +86,21 @@ def redacted_transcript(payload: dict) -> str:
     return "\n".join(lines)
 
 
-def build_request(transcript: str, scenario: dict | None, recorded_result: str | None) -> dict:
-    context = [
+def build_context(transcript: str, scenario: dict | None, recorded_result: str | None) -> str:
+    return "\n".join([
         f"Scenario: {scenario['display_name'] if scenario else 'unknown'}",
         "Red flags: " + ("; ".join(scenario["red_flags"]) if scenario else "unknown"),
         f"Outcome the caller recorded during the call: {recorded_result or 'none'}",
         "",
         "Transcript:",
         transcript,
-    ]
+    ])
+
+
+def build_request(transcript: str, scenario: dict | None, recorded_result: str | None) -> dict:
     return {
         "system_instruction": {"parts": [{"text": INSTRUCTIONS}]},
-        "contents": [{"role": "user", "parts": [{"text": "\n".join(context)}]}],
+        "contents": [{"role": "user", "parts": [{"text": build_context(transcript, scenario, recorded_result)}]}],
         "generationConfig": {
             "responseMimeType": "application/json",
             "responseSchema": RESPONSE_SCHEMA,
@@ -106,11 +109,29 @@ def build_request(transcript: str, scenario: dict | None, recorded_result: str |
     }
 
 
-def parse_response(body: dict, scenario: dict | None) -> dict | None:
-    """Validate Gemini's JSON; return None rather than store anything malformed."""
+def build_openai_request(transcript: str, scenario: dict | None, recorded_result: str | None, model: str) -> dict:
+    """Same rubric for OpenAI-compatible APIs (Groq and others), which take a JSON mode instead of a schema."""
+    json_shape = (
+        'Respond with only a JSON object: {"rating": one of ' + json.dumps(list(RATINGS))
+        + ', "disclosed": list from ' + json.dumps(list(DISCLOSURES))
+        + ', "spotted_red_flags": list of red flag names copied exactly, "reason": string}.'
+    )
+    return {
+        "model": model,
+        "messages": [
+            {"role": "system", "content": f"{INSTRUCTIONS}\n\n{json_shape}"},
+            {"role": "user", "content": build_context(transcript, scenario, recorded_result)},
+        ],
+        "response_format": {"type": "json_object"},
+        "temperature": 0,
+    }
+
+
+def parse_result(text: str, scenario: dict | None) -> dict | None:
+    """Validate the model's JSON; return None rather than store anything malformed."""
     try:
-        result = json.loads(body["candidates"][0]["content"]["parts"][0]["text"])
-    except (KeyError, IndexError, TypeError, json.JSONDecodeError):
+        result = json.loads(text)
+    except (TypeError, json.JSONDecodeError):
         return None
     if not isinstance(result, dict) or result.get("rating") not in RATINGS:
         return None
@@ -126,38 +147,71 @@ def parse_response(body: dict, scenario: dict | None) -> dict | None:
     }
 
 
+def parse_response(body: dict, scenario: dict | None) -> dict | None:
+    try:
+        text = body["candidates"][0]["content"]["parts"][0]["text"]
+    except (KeyError, IndexError, TypeError):
+        return None
+    return parse_result(text, scenario)
+
+
+def parse_openai_response(body: dict, scenario: dict | None) -> dict | None:
+    try:
+        text = body["choices"][0]["message"]["content"]
+    except (KeyError, IndexError, TypeError):
+        return None
+    return parse_result(text, scenario)
+
+
+def post_with_retry(url: str, headers: dict, request: dict) -> httpx.Response | None:
+    for attempt in range(len(RETRY_DELAYS_SECS) + 1):
+        try:
+            response = httpx.post(url, headers=headers, json=request, timeout=30.0)
+            response.raise_for_status()
+            return response
+        except httpx.HTTPStatusError as exc:
+            status = exc.response.status_code
+            retryable = status in RETRY_STATUSES
+            logger.warning("Scoring failed with HTTP %s (attempt %s)", status, attempt + 1)
+        except httpx.HTTPError as exc:
+            retryable = True
+            logger.warning("Scoring request failed (%s, attempt %s)", type(exc).__name__, attempt + 1)
+        if not retryable or attempt == len(RETRY_DELAYS_SECS):
+            return None
+        time.sleep(RETRY_DELAYS_SECS[attempt])
+    return None
+
+
 def score_call(payload: dict, scenario: dict | None, recorded_result: str | None,
-               api_key: str, model: str) -> dict | None:
-    """Rate one finished call. Returns None if Gemini isn't configured or the call fails."""
+               api_key: str, model: str, provider: str = "gemini", base_url: str = "") -> dict | None:
+    """Rate one finished call. Returns None if scoring isn't configured or the call fails.
+
+    provider "gemini" is the default; "openai" targets any OpenAI-compatible API
+    at base_url (for example Groq) and is meant for testing.
+    """
     if not api_key:
         return None
     transcript = redacted_transcript(payload)
     if not transcript:
         return None
-    request = build_request(transcript, scenario, recorded_result)
-    for attempt in range(len(RETRY_DELAYS_SECS) + 1):
-        try:
-            response = httpx.post(
-                GEMINI_URL.format(model=model),
-                headers={"x-goog-api-key": api_key},
-                json=request,
-                timeout=30.0,
-            )
-            response.raise_for_status()
-            break
-        except httpx.HTTPStatusError as exc:
-            status = exc.response.status_code
-            retryable = status in RETRY_STATUSES
-            logger.warning("Gemini scoring failed with HTTP %s (attempt %s)", status, attempt + 1)
-        except httpx.HTTPError as exc:
-            retryable = True
-            logger.warning("Gemini scoring request failed (%s, attempt %s)", type(exc).__name__, attempt + 1)
-        if not retryable or attempt == len(RETRY_DELAYS_SECS):
-            return None
-        time.sleep(RETRY_DELAYS_SECS[attempt])
 
-    result = parse_response(response.json(), scenario)
+    if provider == "openai":
+        response = post_with_retry(
+            f"{base_url.rstrip('/')}/chat/completions",
+            {"Authorization": f"Bearer {api_key}"},
+            build_openai_request(transcript, scenario, recorded_result, model),
+        )
+        result = parse_openai_response(response.json(), scenario) if response else None
+    else:
+        response = post_with_retry(
+            GEMINI_URL.format(model=model),
+            {"x-goog-api-key": api_key},
+            build_request(transcript, scenario, recorded_result),
+        )
+        result = parse_response(response.json(), scenario) if response else None
+
     if result is None:
-        logger.warning("Gemini returned an unusable score")
+        if response is not None:
+            logger.warning("Scoring model returned an unusable score")
         return None
-    return result | {"model": model, "scored_at": datetime.now(timezone.utc)}
+    return result | {"provider": provider, "model": model, "scored_at": datetime.now(timezone.utc)}

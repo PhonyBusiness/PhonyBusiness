@@ -163,3 +163,34 @@ def test_safe_word_calls_are_not_scored(client, mongo, monkeypatch):
     client.post("/webhooks/post-call", json=payload)
     assert sent == []
     assert mongo.get_conversation("conv_test_1")["score"] is None
+
+
+def openai_body(result: dict) -> dict:
+    return {"choices": [{"message": {"content": json.dumps(result)}}]}
+
+
+def test_openai_compatible_provider_for_testing(monkeypatch):
+    monkeypatch.setattr(gemini_scoring.httpx, "post", fake_post(200, openai_body(VALID)))
+    score = score_call(json.loads(FIXTURE.read_text()), SCENARIO, "fail", "groq-key", "llama-test",
+                       provider="openai", base_url="https://api.groq.com/openai/v1/")
+
+    assert score["rating"] == "fail" and score["provider"] == "openai" and score["model"] == "llama-test"
+    assert fake_post.sent["url"] == "https://api.groq.com/openai/v1/chat/completions"
+    assert fake_post.sent["headers"] == {"Authorization": "Bearer groq-key"}
+    request = fake_post.sent["json"]
+    assert request["model"] == "llama-test"
+    assert request["response_format"] == {"type": "json_object"}
+    assert "JSON" in request["messages"][0]["content"]
+    assert "Agent line one." in request["messages"][1]["content"]
+
+
+def test_webhook_uses_openai_provider_when_configured(client, mongo, monkeypatch):
+    monkeypatch.setattr(deps.settings, "scoring_provider", "openai")
+    monkeypatch.setattr(deps.settings, "scoring_api_key", "groq-key")
+    monkeypatch.setattr(deps.settings, "scoring_model", "llama-test")
+    monkeypatch.setattr(deps.settings, "scoring_base_url", "https://api.groq.com/openai/v1")
+    monkeypatch.setattr(gemini_scoring.httpx, "post", fake_post(200, openai_body(VALID)))
+
+    client.post("/webhooks/post-call", json=json.loads(FIXTURE.read_text()))
+    stored = mongo.get_conversation("conv_test_1")
+    assert stored["score"] == "fail" and stored["gemini"]["provider"] == "openai"

@@ -155,6 +155,7 @@ cp .env.example .env
 | `ELEVENLABS_WEBHOOK_SECRET` | Recommended | Verifies post-call webhook signatures. Leave unset only for local development |
 | `GEMINI_API_KEY` | Recommended | Post-call scoring. Leave unset to skip scoring |
 | `GEMINI_MODEL` | No | Defaults to `gemini-3.8-flash` |
+| `SCORING_PROVIDER`, `SCORING_BASE_URL`, `SCORING_API_KEY`, `SCORING_MODEL` | No | Testing only: set `SCORING_PROVIDER=openai` to score with an OpenAI-compatible API such as Groq instead of Gemini |
 | `SAFE_WORD` | No | Defaults to `pineapple` |
 | `ANALYTICS_MIN_GROUP_SIZE` | No | Smallest group the Risk tab will report. Defaults to 5 |
 

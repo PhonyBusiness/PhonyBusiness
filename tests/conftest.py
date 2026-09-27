@@ -24,5 +24,6 @@ def client(mongo, monkeypatch):
     monkeypatch.setattr(deps.settings, "elevenlabs_webhook_secret", "")
     # Never call the real Gemini API from tests; scoring tests mock it explicitly.
     monkeypatch.setattr(deps.settings, "gemini_api_key", "")
+    monkeypatch.setattr(deps.settings, "scoring_provider", "gemini")
     # No context manager: skips the lifespan hook, so no Atlas connection is attempted.
     return TestClient(main.app)
