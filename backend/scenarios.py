@@ -3,6 +3,18 @@
 
 SCENARIOS = [
     {
+        "name": "family_emergency",
+        "display_name": "Family emergency",
+        "persona": "your grandson, in trouble and scared",
+        "ask": "send bail money right away, before he can call anyone else",
+        "red_flags": [
+            "Claims to be a family member in distress",
+            "Asks for secrecy",
+            "Requests money via an unusual payment method",
+        ],
+        "caller_display_name": "Unknown Caller",
+    },
+    {
         "name": "benefits_imposter",
         "display_name": "Benefits imposter",
         "persona": "Officer Daniels from the Federal Benefits Office",
