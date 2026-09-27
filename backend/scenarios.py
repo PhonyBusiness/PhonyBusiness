@@ -9,7 +9,7 @@ SCENARIOS = [
     {
         "name": "family_emergency",
         "display_name": "Family emergency",
-        "persona": "their grandson, scared and calling from jail after a car accident",
+        "persona": "your grandson calling from jail after a car accident",
         "ask": "agree to send bail money right away and keep it a secret from the rest of the family",
         "red_flags": [
             "Claims to be a family member in distress",
