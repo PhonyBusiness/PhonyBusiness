@@ -54,8 +54,11 @@ def recent_conversations(db, limit: int) -> list[dict]:
     """Feed rows for the dashboard: scenario, outcome, flags, and time only."""
     cursor = (
         db["conversations"]
-        .find({}, {"_id": 0, "conversation_id": 1, "scenario_name": 1, "difficulty": 1,
-                   "started_at": 1, "duration_secs": 1, "outcome": 1})
+        .find(
+            {"outcome.result": {"$exists": True, "$ne": None}},
+            {"_id": 0, "conversation_id": 1, "scenario_name": 1, "difficulty": 1,
+             "started_at": 1, "duration_secs": 1, "outcome": 1},
+        )
         .sort("started_at", -1)
         .limit(limit)
     )
@@ -66,8 +69,8 @@ def recent_conversations(db, limit: int) -> list[dict]:
             "difficulty": row.get("difficulty"),
             "started_at": row.get("started_at"),
             "duration_secs": row.get("duration_secs"),
-            "result": (row.get("outcome") or {}).get("result"),
-            "flags": (row.get("outcome") or {}).get("flags") or [],
+            "result": row["outcome"]["result"],
+            "flags": row["outcome"].get("flags") or [],
         }
         for row in cursor
     ]
