@@ -58,6 +58,13 @@
 }
 .chart-box { position: relative; height: 240px; }
 
+.section-title { font-size: 17px; margin: 8px 0 -4px; }
+.feelings {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+}
+
 /* Ranked bar list: full labels, one bar per row */
 .rank-box { position: relative; min-height: 240px; }
 .rank { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 12px; }
@@ -120,6 +127,11 @@ tr.selected { background: #1f2a3a; }
 .facts p:last-child { margin: 6px 0 0; }
 .fact-value { font-size: 18px; font-weight: 600; }
 .detail-chart { margin: 0; }
+.detail-charts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 24px;
+}
 .tips { display: flex; flex-direction: column; gap: 10px; padding-left: 20px; }
 .tips strong { display: block; }
 .tips span { display: block; color: #ccc; font-size: 14px; }

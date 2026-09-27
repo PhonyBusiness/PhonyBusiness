@@ -91,6 +91,21 @@ const dailyChart = new Chart($("chart-daily"), {
   options: { ...baseOptions((ctx) => `Calls: ${ctx.raw}`), scales: axes({ ticks: { precision: 0 } }) },
 });
 
+const frustrationTrendChart = new Chart($("chart-frustration-trend"), {
+  type: "line",
+  data: { labels: [], datasets: [lineDataset()] },
+  options: { ...baseOptions((ctx) => `Avg. peak frustration: ${pct(ctx.raw)}`), scales: axes(percentAxis) },
+});
+
+const frustrationDistChart = new Chart($("chart-frustration-dist"), {
+  type: "bar",
+  data: { labels: [], datasets: [{ data: [], backgroundColor: ACCENT, borderRadius: 4, maxBarThickness: 40 }] },
+  options: {
+    ...baseOptions((ctx) => `${ctx.raw} calls`),
+    scales: axes({ ticks: { precision: 0 } }, { title: { display: true, text: "Peak frustration", color: INK_MUTED } }),
+  },
+});
+
 // Draws a dashed vertical line where the resident made their decision.
 let decisionAt = null;
 const decisionMarker = {
@@ -135,6 +150,40 @@ const frustrationChart = new Chart($("chart-frustration"), {
   plugins: [decisionMarker],
 });
 
+// Sentiment runs from -1 (negative) to +1 (positive); 0 is neutral.
+const SENTIMENT_TICKS = { "-1": "Negative", "0": "Neutral", "1": "Positive" };
+const sentimentWord = (v) => (v > 0.15 ? "positive" : v < -0.15 ? "negative" : "neutral");
+
+const sentimentChart = new Chart($("chart-sentiment"), {
+  type: "line",
+  data: { datasets: [lineDataset()] },
+  options: {
+    maintainAspectRatio: false,
+    interaction: { mode: "index", intersect: false },
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        callbacks: {
+          title: (items) => `At ${clock(items[0].raw.x)}`,
+          label: (ctx) => `Sentiment: ${ctx.raw.y.toFixed(2)} (${sentimentWord(ctx.raw.y)})`,
+        },
+      },
+    },
+    scales: {
+      x: { type: "linear", grid: { display: false }, border: { color: GRID }, ticks: { callback: (v) => clock(v) } },
+      y: {
+        min: -1,
+        max: 1,
+        border: { display: false },
+        ticks: { stepSize: 0.5, callback: (v) => SENTIMENT_TICKS[v] ?? "" },
+        // Emphasize the neutral line so above/below reads at a glance.
+        grid: { color: (ctx) => (ctx.tick.value === 0 ? "#555" : GRID) },
+      },
+    },
+  },
+  plugins: [decisionMarker],
+});
+
 // ---------- Rendering ----------
 
 // GET /analytics/overview → { calls, pass_rate, fail_rate, avg_decision_turn, ... }
@@ -145,9 +194,28 @@ function renderOverview(overview) {
   $("stat-turn").textContent = overview.avg_decision_turn == null ? "–" : `Turn ${overview.avg_decision_turn}`;
 }
 
-// GET /analytics/wellbeing → { stopped, stop_rate, ... }
+// GET /analytics/wellbeing → { stop_rate, peak_frustration_distribution, sentiment_labels, ... }
 function renderWellbeing(wellbeing) {
   $("stat-stops").textContent = pct(wellbeing.stop_rate);
+
+  // Buckets arrive as "0.0-0.2"; label them as percentages.
+  const buckets = wellbeing.peak_frustration_distribution || [];
+  frustrationDistChart.data.labels = buckets.map((b) => {
+    const [low, high] = b.range.split("-").map(Number);
+    return `${Math.round(low * 100)}–${Math.round(high * 100)}%`;
+  });
+  frustrationDistChart.data.datasets[0].data = buckets.map((b) => b.calls);
+  frustrationDistChart.update();
+  setEmpty("chart-frustration-dist", !buckets.some((b) => b.calls > 0));
+
+  // Share of calls per overall sentiment; calls without a label are left out.
+  const moods = (wellbeing.sentiment_labels || []).filter((m) => m.value);
+  const total = moods.reduce((sum, m) => sum + m.calls, 0);
+  renderRank("rank-mood", moods.map((m) => ({
+    label: `${m.value[0].toUpperCase()}${m.value.slice(1)}`,
+    value: total ? m.calls / total : 0,
+    note: `${pct(total ? m.calls / total : null)} · ${m.calls} calls`,
+  })));
 }
 
 // GET /analytics/trends → [{ date, calls, pass_rate, ... }]
@@ -163,6 +231,11 @@ function renderTrends(days) {
   dailyChart.data.datasets[0].data = days.map((d) => d.calls);
   dailyChart.update();
   setEmpty("chart-daily", days.length === 0);
+
+  frustrationTrendChart.data.labels = labels;
+  frustrationTrendChart.data.datasets[0].data = days.map((d) => d.avg_peak_frustration);
+  frustrationTrendChart.update();
+  setEmpty("chart-frustration-trend", !days.some((d) => d.avg_peak_frustration != null));
 }
 
 // GET /analytics/risk → { by_scenario: [...], red_flags: [{ flag, calls, on_fail, on_pass }] }
@@ -243,7 +316,11 @@ function renderRecent(calls) {
 let selectedId = null;
 
 // ElevenLabs termination_reason text; anything else is shown as-is.
-const ENDED_BY = { "end_call tool was called.": "Agent ended the call" };
+const ENDED_BY = {
+  "end_call tool was called.": "Agent ended the call",
+  "Client disconnected": "Resident hung up",
+  "Client disconnected: 1000": "Resident hung up",
+};
 
 // GET /analytics/conversations/{id}
 async function showDetail(conversationId) {
@@ -291,6 +368,16 @@ async function showDetail(conversationId) {
   frustrationChart.resize();
   frustrationChart.update();
   setEmpty("chart-frustration", points.length === 0);
+
+  const sentimentPoints = (call.frustration_timeline || [])
+    .filter((p) => p.t != null && p.sentiment != null)
+    .map((p) => ({ x: p.t, y: p.sentiment }));
+  sentimentChart.data.datasets[0].data = sentimentPoints;
+  sentimentChart.options.scales.x.min = 0;
+  sentimentChart.options.scales.x.max = call.duration_secs || undefined;
+  sentimentChart.resize();
+  sentimentChart.update();
+  setEmpty("chart-sentiment", sentimentPoints.length === 0);
 
   $("detail-tips").replaceChildren(...(call.tips || []).map((tip) => {
     const li = document.createElement("li");
