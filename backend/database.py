@@ -151,3 +151,15 @@ class MongoDatabase:
 
     def get_conversation(self, conversation_id: str) -> dict | None:
         return self.db["conversations"].find_one({"conversation_id": conversation_id}, {"_id": 0})
+
+    def save_score(self, conversation_id: str, call_id: str | None, score: dict) -> None:
+        """Store Gemini's rating on the conversation and, when linked, on the call for the recap."""
+        self.db["conversations"].update_one(
+            {"conversation_id": conversation_id},
+            {"$set": {"score": score["rating"], "gemini": score}},
+        )
+        if call_id and ObjectId.is_valid(call_id):
+            self.db["calls"].update_one(
+                {"_id": ObjectId(call_id)},
+                {"$set": {"score": score["rating"], "updated_at": datetime.now(timezone.utc)}},
+            )

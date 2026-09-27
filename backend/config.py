@@ -20,6 +20,9 @@ class Settings:
         self.elevenlabs_webhook_secret = os.getenv("ELEVENLABS_WEBHOOK_SECRET", "").strip()
         # Breakdowns with fewer calls than this are hidden so no resident can be singled out.
         self.analytics_min_group_size = int(os.getenv("ANALYTICS_MIN_GROUP_SIZE", "5"))
+        # Post-call scoring; leave the key unset to skip scoring.
+        self.gemini_api_key = os.getenv("GEMINI_API_KEY", "").strip()
+        self.gemini_model = os.getenv("GEMINI_MODEL", "gemini-3.8-flash").strip()
 
 
 @lru_cache

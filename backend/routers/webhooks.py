@@ -3,10 +3,12 @@
 import json
 import logging
 
-from fastapi import APIRouter, HTTPException, Request
+from fastapi import APIRouter, BackgroundTasks, HTTPException, Request
 
 from backend.deps import mongo, settings
+from backend.gemini_scoring import score_call
 from backend.post_call import build_conversation, dynamic_variables, verify_signature
+from backend.scenarios import get_scenario
 
 logger = logging.getLogger(__name__)
 
@@ -14,7 +16,7 @@ router = APIRouter()
 
 
 @router.post("/webhooks/post-call")
-async def post_call_webhook(request: Request) -> dict[str, str]:
+async def post_call_webhook(request: Request, background: BackgroundTasks) -> dict[str, str]:
     """Store the analytics fields of a finished conversation; the transcript text is never saved."""
     raw_body = await request.body()
     if settings.elevenlabs_webhook_secret:
@@ -43,4 +45,14 @@ async def post_call_webhook(request: Request) -> dict[str, str]:
     if call is not None:
         mongo.close_call_from_webhook(call["_id"], conversation)
 
+    # Scoring waits on Gemini, so it runs after we've answered ElevenLabs.
+    background.add_task(score_and_save, payload, conversation)
     return {"status": "stored", "conversation_id": conversation_id}
+
+
+def score_and_save(payload: dict, conversation: dict) -> None:
+    scenario = get_scenario(conversation["scenario_name"]) if conversation.get("scenario_name") else None
+    recorded = (conversation.get("outcome") or {}).get("result")
+    score = score_call(payload, scenario, recorded, settings.gemini_api_key, settings.gemini_model)
+    if score is not None:
+        mongo.save_score(conversation["conversation_id"], conversation.get("call_id"), score)

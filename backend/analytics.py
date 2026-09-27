@@ -45,6 +45,10 @@ def conversation_detail(conversation: dict) -> dict:
         "sentiment": conversation.get("sentiment"),
         "call_successful": conversation.get("call_successful"),
         "score": conversation.get("score"),
+        "gemini": {
+            key: (conversation.get("gemini") or {}).get(key)
+            for key in ("rating", "disclosed", "spotted_red_flags", "reason")
+        } if conversation.get("gemini") else None,
         "latency": conversation.get("latency"),
         "cost": conversation.get("cost"),
     }
@@ -197,11 +201,22 @@ def risk(db, min_group_size: int) -> dict:
         ])
     ]
 
+    # What residents gave away, as judged by Gemini's post-call scoring.
+    disclosed = [
+        {"disclosed": row["_id"], "calls": row["calls"]}
+        for row in conversations.aggregate([
+            {"$unwind": "$gemini.disclosed"},
+            {"$group": {"_id": "$gemini.disclosed", "calls": {"$sum": 1}}},
+            {"$sort": {"calls": -1}},
+        ])
+    ]
+
     return {
         "min_group_size": min_group_size,
         "by_scenario": by_scenario,
         "by_difficulty": by_difficulty,
         "red_flags": red_flags,
+        "disclosed": disclosed,
     }
 
 
