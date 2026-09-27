@@ -1,22 +1,27 @@
 """FastAPI entry point for PhonyBusiness."""
 
+import json
+import logging
 from contextlib import asynccontextmanager
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 
 from bson import ObjectId
 from bson.errors import InvalidId
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Query, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import PlainTextResponse
 from pydantic import BaseModel, field_validator
 
+from backend import analytics
 from backend.config import get_settings
 from backend.database import MongoDatabase
 from backend.elevenlabs_client import ElevenLabsError, get_signed_url
+from backend.post_call import build_conversation, dynamic_variables, verify_signature
 from backend.scenarios import get_scenario, list_scenarios
 from backend.tips import get_tips
 
 
+logger = logging.getLogger(__name__)
 settings = get_settings()
 mongo = MongoDatabase(settings.mongodb_uri)
 
@@ -227,3 +232,82 @@ def get_call(call_id: str) -> CallDetailResponse:
         flags=flags,
         tips=tips,
     )
+
+
+@app.post("/webhooks/post-call")
+async def post_call_webhook(request: Request) -> dict[str, str]:
+    """Store the analytics fields of a finished conversation; the transcript text is never saved."""
+    raw_body = await request.body()
+    if settings.elevenlabs_webhook_secret:
+        if not verify_signature(raw_body, request.headers.get("ElevenLabs-Signature"), settings.elevenlabs_webhook_secret):
+            raise HTTPException(status_code=401, detail="Invalid webhook signature")
+    else:
+        logger.warning("ELEVENLABS_WEBHOOK_SECRET is not set; accepting unsigned post-call webhook")
+
+    try:
+        payload = json.loads(raw_body)
+    except json.JSONDecodeError as exc:
+        raise HTTPException(status_code=400, detail="Body is not JSON") from exc
+
+    if payload.get("type") != "post_call_transcription":
+        return {"status": "ignored"}
+
+    data = payload.get("data") or {}
+    conversation_id = data.get("conversation_id")
+    if not conversation_id:
+        raise HTTPException(status_code=400, detail="Missing conversation_id")
+
+    # Dashboard data comes from the webhook alone; the call record is only marked ended.
+    conversation = build_conversation(payload)
+    mongo.save_conversation(conversation)
+    call = mongo.find_call_for_conversation(conversation_id, dynamic_variables(data).get("call_id"))
+    if call is not None:
+        mongo.close_call_from_webhook(call["_id"], conversation)
+
+    return {"status": "stored", "conversation_id": conversation_id}
+
+
+@app.get("/analytics/conversations")
+def list_conversations(limit: int = Query(20, ge=1, le=100)) -> list[dict]:
+    """Recent calls feed: scenario, outcome, flags, and time. No names or transcripts."""
+    return analytics.recent_conversations(mongo.db, limit)
+
+
+@app.get("/analytics/conversations/{conversation_id}")
+def conversation_analytics(conversation_id: str) -> dict:
+    """Per-conversation analytics: outcome, decision timing, frustration curve, tips, latency, cost."""
+    conversation = mongo.get_conversation(conversation_id)
+    if conversation is None:
+        raise HTTPException(status_code=404, detail="Conversation not found")
+    return analytics.conversation_detail(conversation)
+
+
+@app.get("/analytics/overview")
+def analytics_overview() -> dict:
+    """Overview tab: total calls, pass/fail/stop rates, decision speed, cost."""
+    return analytics.overview(mongo.db)
+
+
+@app.get("/analytics/trends")
+def analytics_trends(days: int = Query(30, ge=1, le=365)) -> list[dict]:
+    """Trends tab: daily calls, pass rate, decision speed, and frustration."""
+    since = datetime.now(timezone.utc) - timedelta(days=days)
+    return analytics.trends(mongo.db, since)
+
+
+@app.get("/analytics/risk")
+def analytics_risk() -> dict:
+    """Risk tab: fail rate by scenario and difficulty, and red flags on failed calls."""
+    return analytics.risk(mongo.db, settings.analytics_min_group_size)
+
+
+@app.get("/analytics/wellbeing")
+def analytics_wellbeing() -> dict:
+    """Wellbeing tab: safe-word stops, peak frustration, and how calls ended."""
+    return analytics.wellbeing(mongo.db)
+
+
+@app.get("/analytics/operations")
+def analytics_operations() -> dict:
+    """Operations tab: cost per call, voice minutes, and response latency."""
+    return analytics.operations(mongo.db)
