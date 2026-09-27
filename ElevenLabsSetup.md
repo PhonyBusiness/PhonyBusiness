@@ -7,21 +7,24 @@ By the end you will have:
 - An ElevenLabs agent that plays a realistic scammer, driven by dynamic variables
 - A `record_outcome` server tool that reports pass, fail, caution, or stopped to the backend and gets debrief tips back
 - An `end_call` system tool so the agent hangs up after the debrief
-- A post-call webhook that sends the full transcript to the backend for re-scoring
-- A browser-based call started from the React frontend (no Twilio or phone numbers needed)
+- A post-call webhook that sends each finished call to the backend for privacy-safe analytics
+- 14 designed persona voices, one per scenario, applied per call with a voice override
+- ElevenLabs guardrails as a second safety layer on top of the system prompt
+- A browser-based call started from the plain JavaScript frontend (no Twilio or phone numbers needed)
 
 ## How the pieces fit together
 
 ```
-Browser (React SDK)
-   | starts a session with dynamic variables (persona, ask, red_flags, call_id, ...)
+Browser (ElevenLabs JS client)
+   | starts a session with a signed URL, dynamic variables (persona, ask, red_flags, call_id, ...)
+   | and a voice override for the scenario's persona voice
    v
 ElevenLabs agent (Gemini LLM + ElevenLabs voice)
    | during the call: calls record_outcome  --->  Backend /tools/record_outcome
    |                                         <---  returns TIPS as plain text
    | after the call: post-call webhook       --->  Backend /webhooks/post-call
    v
-Backend stores the outcome, re-scores the transcript with Gemini, feeds the dashboard
+Backend stores the outcome and analytics (never the transcript text) and feeds the dashboard
 ```
 
 ## Before you start
@@ -38,7 +41,9 @@ Backend stores the outcome, re-scores the transcript with Gemini, feeds the dash
 | Permission | Setting | Why |
 | --- | --- | --- |
 | ElevenAgents | Write | Start sessions, request signed URLs, read conversations |
-| Everything else | No Access | The agent's own speech and transcription run inside the agent session, so the key does not need Text to Speech, Speech to Text, Voices, or Voice Generation |
+| Voice Generation | Access (optional) | Only needed to run the voice design script in Step 10 |
+| Voices | Write (optional) | Only needed to save designed voices in Step 10 |
+| Everything else | No Access | The agent's own speech and transcription run inside the agent session, so the key does not need Text to Speech or Speech to Text |
 
 3. Copy the key immediately (it starts with `sk_` and is shown only once) and add it to the backend `.env`. The key must never be sent to the browser.
 
@@ -101,9 +106,10 @@ Difficulty: {{difficulty}}
 HOW THE CALL FLOWS (your stage)
 1. Hook: introduce yourself and the "problem."
 2. Build trust: sound official, use reference or case numbers.
-3. The ask: get their AGREEMENT to your goal, e.g. "Are you able to verify
-   your ID with me right now?" or "Can you get your card in front of you?"
-   Never ask them to actually read out a number, code, password, or detail.
+3. The ask: ask ONLY whether they are willing or able, e.g. "Are you able
+   to verify your identity with me right now?" or "Do you have your card
+   handy?" NEVER say "confirm your number," "read me your number," "what
+   is your number," or anything that invites them to say digits.
 4. Pressure: add urgency or consequences if they stall.
 5. Close: push for immediate agreement.
 Only move to the next stage when the person engages.
@@ -123,6 +129,21 @@ STYLE
   names given in your persona.
 - Never threaten violence, arrest by force, or harm to family. Never insult.
 
+BACKGROUND NOISE AND UNCLEAR SPEECH
+The person may be in a noisy place. Some transcribed text may be background
+noise, a TV, other people talking, or fragments not meant for you.
+- Only respond to speech that is clearly directed at you as part of this call.
+- Ignore isolated fragments, random words, or phrases that don't fit the
+  conversation (e.g. "...and then the weather...", "hey Siri", a single stray
+  word). Do not react to them or change your behavior because of them.
+- If you are unsure whether the person spoke to you, say something short and
+  natural like "Sorry, you cut out there. Are you still with me?" and wait.
+- Never decide PASS or FAIL based on unclear or fragmentary speech. Only a
+  clear statement from the person counts. If an "okay" or "yes" might be
+  background noise, ask again: "Sorry, was that a yes?"
+- EXCEPTION: the safe word always counts, even if it appears alone or seems
+  out of place. If you hear {{safe_word}}, follow the SAFE WORD rules.
+
 DECIDING THE OUTCOME
 PASS: the person clearly refuses after your pushback, says it's a scam,
 says they will call the official number themselves, or asks whether this
@@ -132,8 +153,8 @@ FAIL: the person agrees to your ask ("yes," "okay," "hold on, let me get
 it"), OR starts saying any number, code, password, or card detail, OR
 agrees to pay, buy gift cards, send money, install software, or keep the
 call secret.
-On FAIL, immediately say: "Let me stop you right there. Don't share
-anything else." Then call record_outcome.
+On FAIL, say only: "Let me stop you right there. Don't share anything
+else." Do not add anything else. Then call record_outcome.
 
 CAUTION: the person has spoken 8 times without clearly refusing or
 agreeing. Call record_outcome with caution.
@@ -270,7 +291,7 @@ This sends the full transcript to the backend after every call.
 3. Copy the HMAC secret shown on creation and add it to the backend `.env` as `ELEVENLABS_WEBHOOK_SECRET`. The backend can verify the `ElevenLabs-Signature` header with it.
 4. Save.
 
-The endpoint must return HTTP 200 quickly. Do the Gemini re-scoring after responding, since webhooks that keep failing can be auto-disabled.
+The endpoint must return HTTP 200 quickly. Do any slow processing after responding, since webhooks that keep failing can be auto-disabled.
 
 **Fields the backend uses:**
 
@@ -287,26 +308,71 @@ The endpoint must return HTTP 200 quickly. Do the Gemini re-scoring after respon
 
 Webhooks still arrive for failed calls (for example, when credits run out). Store the outcome if `record_outcome` fired, and mark the call incomplete instead of crashing.
 
-## Step 9: Start the call from the browser
+## Step 9: Guardrails
 
-The frontend starts a voice session with the ElevenLabs React SDK and passes the dynamic variables for that call. The `call_id` comes from the backend's `POST /calls/start`.
+Guardrails add a platform-level safety layer on top of the system prompt. In the agent's **Guardrails** settings, we enabled:
+
+| Guardrail | Setting | Purpose |
+| --- | --- | --- |
+| Focus | Active | Keeps the agent on its training task |
+| Manipulation | Active | Resists attempts to hijack or rewrite the agent's instructions |
+| Content | 7 active | Sexual content, violence, harassment, self-harm, profanity, politics and religion, and medical and legal information |
+| Custom | Recommended | See below |
+
+**Recommended custom guardrail.** This enforces the most important safety rule at the platform level, not just in the prompt:
+
+```
+Never ask the person to say, read out, or spell any actual number, code,
+password, PIN, or card detail. Asking whether they are willing or able to
+verify is allowed; requesting the actual digits is not.
+```
+
+**Test scenarios that touch guarded topics.** A scam simulator is persuasive by design, and some scenarios involve arrest threats (`jury_duty_warrant`, `tax_debt`) or health and legal topics (`health_benefits_card`). Run each of these to the ask in text mode and check the transcript's `triggered_guardrails` field. If a guardrail fires mid-call, the call can end without `record_outcome`, which shows up as NO RESULT on the dashboard. Loosen the specific category rather than disabling guardrails.
+
+## Step 10: Persona voices (Voice Design)
+
+Every scenario gets its own designed voice, so Officer Daniels, the panicked grandson, and the sweepstakes announcer all sound different. The coach section of the call uses the agent's default voice setting from Step 2.
+
+**1. Design the voices with the script.** Persona descriptions live in `scripts/voices/personas.json` (keyed by the scenario `name` in `backend/scenarios.py`). The script calls ElevenLabs' Voice Design API in two phases so you can listen before committing:
+
+```sh
+uv run python scripts/voices/design_voices.py design   # previews saved as mp3s in scripts/voices/voice_previews/
+uv run python scripts/voices/design_voices.py create   # saves voices and writes scripts/voices/voices.json
+```
+
+To pick a preview other than the first, edit `"chosen"` (0, 1, or 2) for that persona in `scripts/voices/previews.json` before running `create`. Both phases skip personas already done, so a failed run can simply be rerun. The API key needs Voice Generation: Access and Voices: Write.
+
+**2. Settings that make designed voices sound human.** Our first voices sounded robotic. What fixed it:
+
+- Use the `eleven_ttv_v3` design model instead of the default `eleven_multilingual_ttv_v2`.
+- Lower `guidance_scale` from the default 5 to 3. ElevenLabs notes that high values can make voices sound artificial.
+- Add a realism line to every description: sounds like a real person on a phone call, not a narrator or announcer, with natural pauses and slight breaths.
+- Write preview texts like real phone speech, with "um," "so," and small restarts, instead of polished scripts.
+- Keep every scammer voice in a neutral American accent. Real scammers sound like anyone, and foreign-accented scammers would teach a false cue.
+
+**3. Allow voice overrides on the agent.** In the agent's **Security** tab, enable only the **voice** override. Leave prompt, first message, and language overrides off so nobody can rewrite the agent's instructions from the browser.
+
+**4. Backend.** `backend/voices.py` reads `voices.json`, and `POST /calls/start` returns the scenario's `voice_id` (or `null`, which falls back to the agent's default voice). The Dockerfile copies `scripts/voices/voices.json` into the image so voices work in production.
+
+**5. Tune the live voice.** On a call, the agent speaks through its own TTS model (built for speed), so a voice can sound flatter than its preview. Lowering the voice stability in the agent's voice settings makes it more expressive.
+
+## Step 11: Start the call from the browser
+
+The frontend (`frontend/app.js`) uses the ElevenLabs JS client. It calls `POST /calls/start`, then starts the session with the signed URL, the dynamic variables, and the scenario's voice:
 
 ```javascript
-await conversation.startSession({
-  signedUrl,               // from the backend once authentication is on; use agentId before that
-  dynamicVariables: {
-    call_id: call.id,
-    first_name,
-    persona,
-    ask,
-    red_flags,
-    difficulty,
-    safe_word,
-  },
+import { Conversation } from "https://cdn.jsdelivr.net/npm/@elevenlabs/client@1.25.0/+esm";
+
+const session = await Conversation.startSession({
+  signedUrl: callData.signed_url,
+  dynamicVariables: callData.dynamic_variables,   // includes call_id, persona, ask, red_flags, ...
+  ...(callData.voice_id && { overrides: { tts: { voiceId: callData.voice_id } } }),
 });
 ```
 
-## Step 10: Turn on authentication (last)
+After the session starts, the frontend sends `conversation.getId()` to `POST /calls/{id}/session`. If the user hangs up before an outcome, it calls `POST /calls/{id}/hangup`, which records a pass, since hanging up is the right move.
+
+## Step 12: Turn on authentication (last)
 
 Once the backend's `POST /calls/start` returns a signed URL (or conversation token) created with the API key, enable authentication in the agent's security settings. After that, only sessions started through your backend can use the agent.
 
@@ -317,8 +383,9 @@ Do this last. With authentication on, the frontend cannot start sessions using t
 | Variable | Where it comes from | Used by |
 | --- | --- | --- |
 | `ELEVENLABS_API_KEY` | Step 1 | Backend only |
-| `ELEVENLABS_AGENT_ID` | Step 2 | Backend and frontend |
+| `ELEVENLABS_AGENT_ID` | Step 2 | Backend |
 | `ELEVENLABS_WEBHOOK_SECRET` | Step 8 | Backend only |
+| `SAFE_WORD` | Optional, defaults to `pineapple` | Backend (sent to the agent as a dynamic variable) |
 
 Keep `.env` in `.gitignore` and commit a `.env.example` with empty values.
 
@@ -339,8 +406,11 @@ Run each case and confirm the backend logs show the right `call_id`, `result`, a
 | Caution | Keep asking questions without agreeing or refusing | `caution` after about 8 turns |
 | Safe word | "Pineapple" at any point | `stopped`, no lesson, call ends |
 | Honesty | "Is this an AI?" | Agent admits it, `pass` |
+| Hang up | Press the hang-up button mid-scam | `pass` recorded by `POST /calls/{id}/hangup` |
+| Background noise | Type a stray fragment mid-scam in text mode (e.g. "...yeah the game's on...") | Agent ignores it or checks in; no outcome recorded |
+| Voices | Start two different scenarios | Each uses its own persona voice |
 
-Repeat a pass and a fail for each scenario in `scenarios.py`.
+Repeat a pass and a fail for each scenario in `scenarios.py`, and run the guarded scenarios from Step 9.
 
 ### Save credits
 
@@ -348,7 +418,7 @@ Use the agent's text-mode test in the dashboard for logic tests (outcomes, safe 
 
 ## Troubleshooting (lessons learned)
 
-**The agent does not stop the user mid-number.** A voice agent can only respond once the user pauses, so someone reading a number in one breath gets heard in full. The fix is in the design: the scammer asks for agreement first ("Are you able to verify your ID right now?"), agreement itself counts as a fail, and the agent never asks for the actual digits. Keep transcript redaction on the backend as a safety net.
+**The agent does not stop the user mid-number.** A voice agent can only respond once the user pauses, so someone reading a number in one breath gets heard in full. The fix is in the design: the scammer asks for agreement first ("Are you able to verify your ID right now?"), agreement itself counts as a fail, and the agent never asks for the actual digits. The backend never stores transcript text, so digits that do get spoken don't end up in your database.
 
 **The flags do not match the tip bank.** The agent reworded them (for example, "urgency, ID request"). Putting the exact-copy instruction in the system prompt, not only in the tool description, fixed it. The backend should still fall back to case-insensitive or keyword matching, then general tips.
 
@@ -364,12 +434,35 @@ Use the agent's text-mode test in the dashboard for logic tests (outcomes, safe 
 
 **The call ends with a quota error.** The payload shows `status: "failed"` and an error like "This request exceeds your quota." You are out of credits. Redeem promo codes or upgrade, and use text mode for logic tests.
 
+**The agent asks for the number directly ("confirm your Social Security number").** The ask wording invited digits. Step 3 of the call flow now forbids phrases like "confirm your number," the `ask` values in `scenarios.py` should use agreement framing ("agree to verify..."), and the custom guardrail in Step 9 backs this up.
+
+**Signed URL request fails with "missing the permission convai_write".** The backend's API key has ElevenAgents set to Read. Set it to Write, update `.env` everywhere, and restart the backend.
+
+**`record_outcome` returns 401 "Missing signature".** HMAC signatures are sent on post-call webhooks, not on server tool calls. Only verify `ElevenLabs-Signature` on `/webhooks/post-call`. To protect the tool endpoint, use a shared secret header set in the tool's configuration instead.
+
+**`record_outcome` returns 400 "Invalid call_id".** The backend expects a real MongoDB ObjectId for an existing call. Use an ID from `POST /calls/start` (or a permanent test record) as the agent's `call_id` test value, not a placeholder like `test_123`.
+
+**The dashboard shows NO RESULT.** The conversation ended without a `record_outcome` call: the user hung up early, the connection dropped, credits ran out, a guardrail ended the call, or it was a dashboard test call with no matching call record. Check `termination_reason` via `GET /analytics/conversations/{conversation_id}`. Hang-ups are recorded as a pass in the `calls` collection; the webhook should copy that onto the conversation when the transcript has no outcome.
+
+**Designed voices sound robotic.** See Step 10: use the v3 design model, a lower guidance scale, a realism line in each description, and conversational preview texts.
+
+**Voice design only created some of the voices.** The design phase stopped partway (for example, stopped early to listen). Rerun `design`, then `create`; both skip personas already done.
+
+**`user_id` is the same on every call.** It is an ElevenLabs-side ID, typically the account that started the session, not your app's user. Use the `call_id` dynamic variable to link calls to your own records.
+
+**Per-turn sentiment is sometimes null.** ElevenLabs does not score every user turn. Very short replies ("Okay.", "Hello?") and the final user turn are typically unscored. Treat `null` as "not scored," and use the call-level sentiment fields for charts.
+
+**Numbers are visible in the ElevenLabs call history.** Built-in conversation history redaction is an enterprise feature. The backend never stores transcript text, and the prompt and custom guardrail keep the agent from asking for real numbers in the first place.
+
 **The tool or webhook stops working after a restart.** Free ngrok URLs change each time ngrok restarts. Update both the `record_outcome` URL and the post-call webhook URL.
 
 ## Safety notes
 
 - Scenarios use fictional agencies, banks, and companies only.
-- The agent never asks users to read out real numbers, and the backend redacts digit sequences from transcripts.
+- The agent never asks users to read out real numbers; it only asks whether they are willing, and agreement is the fail.
+- The backend never stores transcript text, names, conversation history, or call summaries.
+- ElevenLabs guardrails (focus, manipulation, content, and a recommended custom rule) back up the prompt at the platform level.
 - The safe word ends any call immediately with no lesson.
 - If a user asks whether they are talking to an AI, the agent says yes.
 - Use only stock or designed voices, never clones of real people.
+- All scammer voices use a neutral American accent, so users don't learn the false cue that scammers sound foreign.
