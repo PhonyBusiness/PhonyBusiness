@@ -53,6 +53,7 @@ def start_call(payload: StartCallRequest) -> StartCallResponse:
         "red_flags": ", ".join(scenario["red_flags"]),
         "difficulty": payload.difficulty,
         "safe_word": settings.safe_word,
+        "opening_line": scenario["opening_line"].format(first_name=payload.first_name),
     }
 
     now = datetime.now(timezone.utc)
