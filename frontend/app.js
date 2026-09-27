@@ -1,6 +1,6 @@
 import { Conversation } from "https://cdn.jsdelivr.net/npm/@elevenlabs/client@1.25.0/+esm";
 
-const API = "http://localhost:8000"; // swap for the deployed backend URL
+const API = "https://clapped-boondocks-basics.ngrok-free.dev"; // swap for the deployed backend URL
 
 const $ = (id) => document.getElementById(id);
 
@@ -20,9 +20,11 @@ function show(name) {
 }
 
 async function api(path, body) {
+  // ngrok's free tier serves an HTML warning page to browsers unless this header is sent.
+  const headers = { "ngrok-skip-browser-warning": "true" };
   const options = body === undefined
-    ? {}
-    : { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) };
+    ? { headers }
+    : { method: "POST", headers: { ...headers, "Content-Type": "application/json" }, body: JSON.stringify(body) };
   const res = await fetch(`${API}${path}`, options);
   if (!res.ok) throw new Error(`${path} failed with HTTP ${res.status}`);
   return res.json();
@@ -60,8 +62,9 @@ async function loadScenarios() {
   try {
     const scenarios = await api("/scenarios");
     $("scenario").replaceChildren(...scenarios.map((s) => new Option(s.display_name, s.name)));
-  } catch {
+  } catch (err) {
     // Keep the hardcoded options in index.html if the backend is unreachable.
+    console.warn("Couldn't load scenarios:", err);
   }
 }
 
