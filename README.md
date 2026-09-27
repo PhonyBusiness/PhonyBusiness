@@ -46,6 +46,35 @@ uv run streamlit run app.py
 - API health: http://localhost:8000/health
 - API documentation: http://localhost:8000/docs
 
+## Testing with the real ElevenLabs agent (ngrok)
+
+ElevenLabs needs to reach the backend from the public internet for two things
+during a live call: the `record_outcome` tool (mid-call) and the post-call
+webhook (after the call ends). Locally, that means tunneling the backend with
+[ngrok](https://ngrok.com/).
+
+```sh
+brew install ngrok
+ngrok config add-authtoken <your-token>   # from https://dashboard.ngrok.com/get-started/your-authtoken
+```
+
+With the backend already running in one terminal, tunnel it in another:
+
+```sh
+ngrok http 8000
+```
+
+Copy the `https://...ngrok-free.dev` URL it prints, and set it in the
+ElevenLabs agent's configuration:
+
+- `record_outcome` tool URL → `https://<subdomain>.ngrok-free.dev/tools/record_outcome`
+- Post-call webhook URL → `https://<subdomain>.ngrok-free.dev/webhooks/post-call`
+
+To debug what ElevenLabs actually sent (headers, body, the response), open
+ngrok's local inspector at http://127.0.0.1:4040. It logs every request that
+passed through the tunnel and lets you replay one without needing to place
+another live call.
+
 ## Project layout
 
 ```text
