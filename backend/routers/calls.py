@@ -11,6 +11,7 @@ from backend.deps import mongo, settings
 from backend.elevenlabs_client import ElevenLabsError, get_signed_url
 from backend.scenarios import get_scenario, list_scenarios
 from backend.tips import get_tips
+from backend.voices import get_voice_id
 
 router = APIRouter()
 
@@ -38,6 +39,12 @@ class StartCallResponse(BaseModel):
     signed_url: str
     dynamic_variables: dict[str, str]
 
+class StartCallResponse(BaseModel):
+    call_id: str
+    caller_name: str
+    signed_url: str
+    dynamic_variables: dict[str, str]
+    voice_id: str | None = None
 
 @router.post("/calls/start", response_model=StartCallResponse)
 def start_call(payload: StartCallRequest) -> StartCallResponse:
@@ -85,6 +92,7 @@ def start_call(payload: StartCallRequest) -> StartCallResponse:
         caller_name=scenario["caller_display_name"],
         signed_url=signed_url,
         dynamic_variables=dynamic_variables,
+        voice_id=get_voice_id(scenario["name"]),
     )
 
 
