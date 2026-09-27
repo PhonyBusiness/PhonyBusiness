@@ -51,6 +51,7 @@ flowchart LR
 - **Stop-before-disclosure design**: the scammer asks for your agreement, never your actual numbers, and agreement itself counts as a fail
 - **Instant coaching** with specific do and don't guidance for each red flag you encountered
 - **Safe word** that ends any call immediately, with no lesson and no judgment
+- **Independent Gemini scoring**: after each call, Gemini re-reads a redacted transcript and rates it pass, caution, or fail, with what the resident gave away and a one-line reason
 - **Analytics dashboard** with overview, trends, risk, wellbeing, and operations views
 - **Privacy by design**: we keep results, not conversations
 
@@ -104,6 +105,7 @@ A tool that makes realistic scam calls has to be impossible to turn into a scam 
 - **Honest when asked.** If you ask whether you're talking to an AI, the agent says yes.
 - **No voice cloning.** Every voice is designed from a text description.
 - **Neutral accents.** All scammer voices use a neutral American accent, so users don't learn the false cue that scammers "sound foreign." Real scammers sound like anyone.
+- **Redacted before AI scoring.** Before a transcript goes to Gemini, numbers (digits or spoken), the resident's name, and emails are replaced with placeholders. The redacted text is used once and never stored. Known gaps: other people's names, street names, and spoken dates aren't removed; a production pilot should use a paid Gemini tier with no-training terms.
 - **Results, not conversations.** The backend never stores transcript text, names, conversation history, or call summaries. Dashboard breakdowns with fewer than `ANALYTICS_MIN_GROUP_SIZE` calls are suppressed so no individual can be singled out.
 
 ## Architecture
@@ -116,6 +118,7 @@ flowchart LR
   EL -->|record_outcome<br/>mid-call| BE
   BE -->|tips| EL
   EL -->|post-call webhook| BE
+  BE -->|redacted transcript| GM[Gemini API<br/>post-call scoring]
   BE <--> DB[(MongoDB Atlas)]
   FE -->|/analytics/*| BE
 ```
@@ -125,6 +128,7 @@ flowchart LR
 | Frontend | Plain HTML, CSS, and JavaScript (no build step), ElevenLabs JS client, hosted on GitHub Pages |
 | Backend | FastAPI, Python 3.12, uv, Docker |
 | Voice AI | ElevenLabs Agents with a Gemini Flash LLM |
+| Scoring | Gemini API (`gemini-3.8-flash` by default), structured JSON output |
 | Database | MongoDB Atlas |
 
 ## Getting started
@@ -149,6 +153,8 @@ cp .env.example .env
 | `ELEVENLABS_API_KEY` | Yes | Creates signed session URLs. Needs ElevenAgents: Write |
 | `ELEVENLABS_AGENT_ID` | Yes | The agent to use for calls |
 | `ELEVENLABS_WEBHOOK_SECRET` | Recommended | Verifies post-call webhook signatures. Leave unset only for local development |
+| `GEMINI_API_KEY` | Recommended | Post-call scoring. Leave unset to skip scoring |
+| `GEMINI_MODEL` | No | Defaults to `gemini-3.8-flash` |
 | `SAFE_WORD` | No | Defaults to `pineapple` |
 | `ANALYTICS_MIN_GROUP_SIZE` | No | Smallest group the Risk tab will report. Defaults to 5 |
 
@@ -226,10 +232,10 @@ Persona descriptions live in `scripts/voices/personas.json`. Scenarios without a
 | Method and path | Tab | Returns |
 | --- | --- | --- |
 | `GET /analytics/conversations?limit=20` | Recent calls | Scenario, result, red flags, and time |
-| `GET /analytics/conversations/{conversation_id}` | Call detail | Outcome, decision timing, tips, frustration over time, latency, cost |
+| `GET /analytics/conversations/{conversation_id}` | Call detail | Outcome, Gemini rating and reason, decision timing, tips, frustration over time, latency, cost |
 | `GET /analytics/overview` | Overview | Call counts, pass/fail/stop rates, average decision time, average cost |
 | `GET /analytics/trends?days=30` | Trends | Daily calls, pass rate, decision time, frustration |
-| `GET /analytics/risk` | Risk | Fail rate by scenario and difficulty; red flags ranked by failed calls |
+| `GET /analytics/risk` | Risk | Fail rate by scenario and difficulty; red flags ranked by failed calls; what residents gave away (from Gemini) |
 | `GET /analytics/wellbeing` | Wellbeing | Safe-word stop rate, peak frustration, how calls ended |
 | `GET /analytics/operations` | Operations | Cost per call, voice minutes, latency, model fallbacks |
 
@@ -245,6 +251,7 @@ backend/
   deps.py              Shared settings and database instances
   elevenlabs_client.py Signed URL requests to ElevenLabs
   post_call.py         Turns the post-call webhook into a privacy-safe record
+  gemini_scoring.py    Redacts the transcript and scores the call with Gemini
   analytics.py         Dashboard queries (MongoDB aggregation pipelines)
   scenarios.py         Scam scenario configs
   tips.py              Red-flag do and don't guidance
@@ -294,7 +301,6 @@ The image includes `scripts/voices/voices.json`, so per-scenario voices work in 
 - **Real phone calls:** deliver practice calls to a resident's actual phone, with verified opt-in
 - **Coach handoff:** an ElevenLabs workflow that hands the debrief to a separate coach agent in its own voice
 - **Spanish scenarios** with automatic language detection
-- **Transcript-based re-scoring** as a second, independent judge of each outcome
 - **Program pilots** with senior centers, libraries, and local consumer protection offices
 
 ## License
