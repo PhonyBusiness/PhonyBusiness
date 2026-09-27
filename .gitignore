@@ -10,3 +10,6 @@ htmlcov/
 .streamlit/secrets.toml
 .DS_Store
 *.egg-info/
+
+scripts/voices/voice_previews/
+scripts/voices/previews.json

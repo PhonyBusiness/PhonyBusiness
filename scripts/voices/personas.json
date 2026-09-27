@@ -1,0 +1,92 @@
+[
+  {
+    "key": "benefits_imposter",
+    "name": "Officer Daniels",
+    "description": "A confident middle-aged American man in his late 40s with a neutral accent. Speaks in a clipped, official, slightly bureaucratic tone, like a government caseworker reading from a screen. Calm but firm, with a hint of impatience. Moderate pace, clear enunciation. Sounds like he is on an office phone line.",
+    "preview_text": "Yeah, hi, good afternoon. This is Officer Daniels, uh, with the Federal Benefits Office. So I'm calling about your account, there's a, um, a hold flagged on it. We really need to get this sorted out today, okay?"
+  },
+  {
+    "key": "tech_support",
+    "name": "SecureTech Technician",
+    "description": "A friendly, fast-talking American man in his early 30s with a neutral accent. Upbeat and helpful on the surface, like an overly eager customer service agent, but slightly rushed. Casual, reassuring tone. Faint call-center quality to the audio.",
+    "preview_text": "Hey, hi there! So, uh, this is SecureTech Support. Our system just flagged, like, a pretty serious virus on your computer. Don't worry though, I can walk you through it, it'll only take a few minutes, I promise."
+  },
+  {
+    "key": "family_emergency",
+    "name": "Grandson",
+    "description": "A young American man around 20 years old, sounding panicked, breathless, and on the verge of tears. Speaks quickly with nervous pauses and a shaky voice, as if calling from a noisy, stressful place. Emotional and pleading.",
+    "preview_text": "Grandma? Hey, it's, it's me. Um, I'm in really big trouble and I, I didn't know who else to call. Please don't tell Mom and Dad, okay? I just, I really need your help right now."
+  },
+  {
+    "key": "tax_debt",
+    "name": "Agent Collins",
+    "description": "A stern American woman in her 40s with a neutral accent. Cold, authoritative, and intimidating, like a no-nonsense enforcement officer. Speaks deliberately with a serious, threatening edge and little warmth. Office phone line quality.",
+    "preview_text": "This is Agent Collins, Federal Revenue Office. Look, our records show an overdue balance on your account, and, uh, a warrant is being prepared. I'm going to need you to take care of this today. On this call."
+  },
+  {
+    "key": "jury_duty_warrant",
+    "name": "Sergeant Brennan",
+    "description": "A gruff American man in his 50s with a neutral accent. Deep, commanding voice like a veteran law enforcement officer. Firm, matter-of-fact, and slightly impatient, with a clear sense of authority. Sounds like a busy station phone line.",
+    "preview_text": "Yeah, this is Sergeant Brennan with the Marlow County Sheriff's Office. So, you missed jury duty, and, uh, there's an active warrant in your name now. I'm calling to give you a chance to clear this up before we send someone out."
+  },
+  {
+    "key": "bank_fraud_alert",
+    "name": "Emily",
+    "description": "A polished, professional American woman in her early 30s with a neutral accent. Calm, concerned, and reassuring, like a trained bank fraud specialist. Clear and articulate with a caring, protective tone. Clean call-center audio.",
+    "preview_text": "Hi, this is Emily, um, from the Harborline Bank fraud department. So we've noticed some unusual activity on your account, and I just want to make sure your money's safe, okay? I'll only need to confirm a couple things with you."
+  },
+  {
+    "key": "order_refund",
+    "name": "Jason",
+    "description": "A casual, helpful American man in his late 20s with a neutral accent. Friendly and conversational like an online retail customer service rep, speaking a little quickly. Upbeat but with a note of urgency. Call-center audio quality.",
+    "preview_text": "Hey, how's it going? This is Jason from Cartwell customer protection. So, uh, we flagged an order on your account, a laptop, over a thousand bucks. If that wasn't you, no worries, I can help you cancel it real quick."
+  },
+  {
+    "key": "utility_shutoff",
+    "name": "Linda",
+    "description": "A brisk American woman in her 50s with a neutral accent. Businesslike and impatient, like a billing department employee handling too many accounts. Matter-of-fact with an urgent, no-nonsense tone. Office phone line quality.",
+    "preview_text": "Hi, yeah, this is Linda from Crestview Power and Light billing. So your account's past due, and, um, there's actually a crew scheduled to disconnect you within the hour. I can stop that, but we've gotta handle it right now, okay?"
+  },
+  {
+    "key": "prize_sweepstakes",
+    "name": "Richard Hayes",
+    "description": "An enthusiastic American man in his 60s with a neutral accent. Warm, booming, and celebratory like an old-school game show announcer. Excited and charming, speaking with big energy and a salesman's polish.",
+    "preview_text": "Well hello there! This is Richard Hayes over at Silverline Sweepstakes, and, oh boy, have I got news for you. You've been selected as our grand prize winner. Two hundred fifty thousand dollars! Are you sitting down?"
+  },
+  {
+    "key": "health_benefits_card",
+    "name": "Maria",
+    "description": "A gentle, friendly American woman in her 40s with a neutral accent. Soft-spoken, patient, and caring, like a helpful benefits coordinator. Warm and trustworthy, speaking at a relaxed pace. Office phone line quality.",
+    "preview_text": "Hi there, this is Maria, um, from the Senior Health Benefits Program. So we're sending out new member cards this month, and I just wanted to make sure yours gets to you without any, you know, any delays."
+  },
+  {
+    "key": "debt_relief",
+    "name": "Tom",
+    "description": "A smooth, persuasive American man in his 40s with a neutral accent. Confident and friendly like a slick sales representative, with a relaxed, convincing tone. Speaks easily and quickly, always selling. Call-center audio quality.",
+    "preview_text": "Hey, hi, it's Tom from Lowbridge Credit Solutions. So, good news, you actually qualify to get your credit card interest rate dropped to zero. Now, this offer's only open for, uh, a short time, so let's get you set up."
+  },
+  {
+    "key": "investment_opportunity",
+    "name": "Michael Grant",
+    "description": "A polished, sophisticated American man in his late 30s with a neutral accent. Confident and articulate like a high-end financial advisor. Smooth and persuasive with an air of exclusivity and success. Clean, professional audio.",
+    "preview_text": "Good afternoon, it's Michael Grant with Quantaris Capital. So, I'm reaching out to a, uh, small group of clients about an opportunity with guaranteed returns. Honestly, it's rare. The window closes Friday."
+  },
+  {
+    "key": "phone_carrier",
+    "name": "Chris",
+    "description": "A calm, efficient American man in his early 30s with a neutral accent. Professional and technical like a telecom account security specialist. Steady, clear, and reassuring, speaking at a measured pace. Clean call-center audio.",
+    "preview_text": "Hi, this is Chris with Tellura Wireless, account security. So, uh, it looks like someone just tried to move your phone number to a new device. I can block that for you right now, I'll just need to verify a few things first."
+  },
+  {
+    "key": "travel_package",
+    "name": "Ashley",
+    "description": "A bubbly, energetic American woman in her mid 20s with a neutral accent. Cheerful and enthusiastic like a vacation club sales rep. Bright, fast-paced, and eager, with a big friendly smile in her voice.",
+    "preview_text": "Hi! Oh my gosh, okay, this is Ashley from Sunmere Vacation Club, and you've been picked for, like, an exclusive resort getaway at ninety percent off! Beaches, all-inclusive, the whole thing. We just need to lock in your spot today!"
+  },
+  {
+    "key": "coach",
+    "name": "Coach",
+    "description": "A warm, kind American woman in her 50s with a neutral accent. Calm, reassuring, and patient, like a trusted community educator or a favorite teacher. Speaks slowly and clearly with gentle warmth. Clean, high-quality studio audio.",
+    "preview_text": "Okay, so, this was a PhonyBusiness practice call, and nothing you said was saved or shared. And honestly, lots of people respond the same way. That's exactly why we practice. So let's, um, walk through the red flags together."
+  }
+]
