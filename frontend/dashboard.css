@@ -1,0 +1,137 @@
+/* Dashboard layout; base colors and fonts come from style.css. */
+
+.dash {
+  max-width: 1040px;
+  margin: 0 auto;
+  padding: 32px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.dash-header {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 12px;
+}
+.dash-header p { margin-top: 6px; }
+.dash-actions { display: flex; align-items: center; gap: 16px; }
+.dash-actions .btn { padding: 8px 16px; font-size: 14px; }
+
+.notice {
+  margin: 0;
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: #2a2412;
+  color: #fab219;
+  font-size: 14px;
+}
+
+.card {
+  margin: 0;
+  padding: 16px;
+  border-radius: 14px;
+  background: #1a1a1a;
+}
+.card h2, figcaption { font-size: 15px; font-weight: 600; margin: 0 0 12px; }
+.card h2 .muted, figcaption .muted { font-weight: 400; }
+.card h3 { font-size: 14px; margin: 16px 0 8px; }
+
+.tiles {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 12px;
+}
+.tile { padding: 14px; border-radius: 14px; background: #1a1a1a; }
+.tile-label { margin: 0; color: #9a9a9a; font-size: 13px; }
+.tile-value { margin: 6px 0 0; font-size: clamp(24px, 6vw, 32px); font-weight: 700; font-variant-numeric: tabular-nums; }
+
+.charts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+  gap: 16px;
+}
+@media (max-width: 420px) {
+  .charts { grid-template-columns: 1fr; }
+}
+.chart-box { position: relative; height: 240px; }
+
+.section-title { font-size: 17px; margin: 8px 0 -4px; }
+.feelings {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+/* Ranked bar list: full labels, one bar per row */
+.rank-box { position: relative; min-height: 240px; }
+.rank { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 12px; }
+.rank-label { display: flex; justify-content: space-between; gap: 12px; font-size: 14px; margin-bottom: 4px; }
+.rank-label .muted { white-space: nowrap; font-size: 13px; }
+.rank-track { height: 10px; border-radius: 4px; background: #262626; }
+.rank-bar { height: 100%; border-radius: 4px; background: #3987e5; min-width: 4px; }
+.empty {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  margin: 0;
+  color: #9a9a9a;
+  font-size: 14px;
+  text-align: center;
+}
+
+.table-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; }
+th { text-align: left; color: #9a9a9a; font-weight: 500; }
+th, td { padding: 10px 8px; border-bottom: 1px solid #2a2a2a; vertical-align: top; }
+td.muted { text-align: center; }
+tr.clickable { cursor: pointer; }
+tr.clickable:hover, tr.clickable:focus-visible { background: #242424; outline: none; }
+tr.selected { background: #1f2a3a; }
+
+/* Result pill: icon + label, never color alone */
+.pill {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+  background: #3a3a3a;
+}
+.pill.pass { background: #0ca30c; color: #06260f; }
+.pill.fail { background: #d03b3b; color: #fff; }
+.pill.caution { background: #fab219; color: #2b2200; }
+
+/* Call detail */
+.detail-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+.detail-header h2 { margin-bottom: 4px; }
+.close {
+  background: #2a2a2a;
+  color: #f5f5f5;
+  border: none;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  cursor: pointer;
+}
+.facts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 12px;
+  margin: 16px 0;
+}
+.facts p:last-child { margin: 6px 0 0; }
+.fact-value { font-size: 18px; font-weight: 600; }
+.detail-chart { margin: 0; }
+.detail-charts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 24px;
+}
+.tips { display: flex; flex-direction: column; gap: 10px; padding-left: 20px; }
+.tips strong { display: block; }
+.tips span { display: block; color: #ccc; font-size: 14px; }
