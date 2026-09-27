@@ -16,6 +16,10 @@ class Settings:
         self.elevenlabs_api_key = os.getenv("ELEVENLABS_API_KEY", "").strip()
         self.elevenlabs_agent_id = os.getenv("ELEVENLABS_AGENT_ID", "").strip()
         self.safe_word = os.getenv("SAFE_WORD", "pineapple").strip()
+        # Unset only in local development; the webhook then skips signature checks.
+        self.elevenlabs_webhook_secret = os.getenv("ELEVENLABS_WEBHOOK_SECRET", "").strip()
+        # Breakdowns with fewer calls than this are hidden so no resident can be singled out.
+        self.analytics_min_group_size = int(os.getenv("ANALYTICS_MIN_GROUP_SIZE", "5"))
 
 
 @lru_cache

@@ -1,8 +1,11 @@
 from datetime import datetime, timezone
 
 from bson import ObjectId
-from pymongo import MongoClient, ReturnDocument
+from pymongo import ASCENDING, DESCENDING, MongoClient, ReturnDocument
 from pymongo.errors import PyMongoError
+
+
+DEFAULT_DATABASE = "phonybusiness"
 
 
 class MongoDatabase:
@@ -22,6 +25,8 @@ class MongoDatabase:
             connectTimeoutMS=10000,
             socketTimeoutMS=10000,
             timeoutMS=15000,
+            # Return UTC-aware datetimes so the API serializes them with a timezone.
+            tz_aware=True,
         )
         try:
             result = client.admin.command("ping")
@@ -34,6 +39,15 @@ class MongoDatabase:
             raise RuntimeError("MongoDB ping was not successful")
 
         self.client = client
+        self.ensure_indexes()
+
+    def ensure_indexes(self) -> None:
+        conversations = self.db["conversations"]
+        conversations.create_index("conversation_id", unique=True)
+        conversations.create_index("call_id")
+        conversations.create_index([("started_at", DESCENDING)])
+        conversations.create_index([("scenario_name", ASCENDING), ("started_at", DESCENDING)])
+        self.db["calls"].create_index("conversation_id")
 
     def close(self) -> None:
         if self.client is not None:
@@ -48,7 +62,8 @@ class MongoDatabase:
     def db(self):
         if self.client is None:
             raise RuntimeError("MongoDatabase is not connected")
-        return self.client.get_default_database()
+        # Fall back to "phonybusiness" when the connection string has no database name.
+        return self.client.get_default_database(default=DEFAULT_DATABASE)
 
     def insert_call(self, document: dict) -> str:
         result = self.db["calls"].insert_one(document)
@@ -101,3 +116,38 @@ class MongoDatabase:
             },
             return_document=ReturnDocument.AFTER,
         )
+
+    def find_call_for_conversation(self, conversation_id: str, call_id: str | None) -> dict | None:
+        """Match a webhook to our call by the call_id dynamic variable, else by conversation_id."""
+        if call_id and ObjectId.is_valid(call_id):
+            call = self.db["calls"].find_one({"_id": ObjectId(call_id)})
+            if call is not None:
+                return call
+        return self.db["calls"].find_one({"conversation_id": conversation_id})
+
+    def save_conversation(self, conversation: dict) -> None:
+        """Upsert by conversation_id so webhook retries don't create duplicates."""
+        self.db["conversations"].replace_one(
+            {"conversation_id": conversation["conversation_id"]}, conversation, upsert=True
+        )
+
+    def close_call_from_webhook(self, call_id: ObjectId, conversation: dict) -> None:
+        """Mark the call ended; fill in the outcome from the webhook only if none was recorded live."""
+        outcome = conversation.get("outcome") or {}
+        self.db["calls"].update_one(
+            {"_id": call_id},
+            [
+                {
+                    "$set": {
+                        "status": "ended",
+                        "conversation_id": conversation["conversation_id"],
+                        "outcome": {"$ifNull": ["$outcome", outcome.get("result")]},
+                        "flags": {"$ifNull": ["$flags", outcome.get("flags")]},
+                        "updated_at": datetime.now(timezone.utc),
+                    }
+                }
+            ],
+        )
+
+    def get_conversation(self, conversation_id: str) -> dict | None:
+        return self.db["conversations"].find_one({"conversation_id": conversation_id}, {"_id": 0})

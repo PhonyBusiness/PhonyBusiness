@@ -1,0 +1,69 @@
+{
+  "type": "post_call_transcription",
+  "event_timestamp": 1790450494,
+  "data": {
+    "agent_id": "agent_test",
+    "agent_name": "PhonyBusiness",
+    "status": "done",
+    "user_id": "user_test",
+    "metadata": {
+      "start_time_unix_secs": 1790450350,
+      "call_duration_secs": 136,
+      "cost": 925,
+      "termination_reason": "end_call tool was called.",
+      "main_language": "en",
+      "conversation_initiation_source": "react_sdk",
+      "cost_fiat": 0.09198571319999108,
+      "charging": {
+        "llm_price": 0.017297100000000003,
+        "llm_usage": {
+          "irreversible_generation": {
+            "model_usage": {
+              "gemini-3.8-flash": {"input": {"tokens": 14603}, "output_total": {"tokens": 347}},
+              "gemini-2.5-flash": {"input": {"tokens": 2217}, "output_total": {"tokens": 112}}
+            }
+          }
+        },
+        "tts_usage": {"total_audio_output_seconds": 87.673},
+        "asr_usage": {"total_audio_input_seconds": 37.488}
+      }
+    },
+    "analysis": {
+      "call_successful": "success",
+      "transcript_summary": "Summary text that must not be stored.",
+      "sentiment_analysis": {
+        "overall_label": "neutral",
+        "overall_sentiment_score": 0.0,
+        "max_user_frustration_score": 0.3,
+        "min_user_sentiment_score": -0.2
+      }
+    },
+    "conversation_initiation_client_data": {
+      "dynamic_variables": {
+        "persona": "Officer Daniels from the Federal Benefits Office",
+        "difficulty": "2",
+        "first_name": "Resident Name",
+        "system__conversation_history": "History text that must not be stored."
+      }
+    },
+    "conversation_id": "conv_test_1",
+    "transcript": [
+      {"role": "agent", "message": "Agent line one.", "time_in_call_secs": 0, "interrupted": false,
+       "conversation_turn_metrics": {"metrics": {"convai_tts_service_ttfb": {"elapsed_time": 0.13}}}},
+      {"role": "user", "message": "User line one.", "time_in_call_secs": 9, "interrupted": false, "analysis": null},
+      {"role": "agent", "message": "Agent line two.", "time_in_call_secs": 12, "interrupted": false,
+       "conversation_turn_metrics": {"metrics": {"convai_llm_service_ttfb": {"elapsed_time": 1.2}}}},
+      {"role": "user", "message": "User line two.", "time_in_call_secs": 25,
+       "analysis": {"user_sentiment_score": 0.0, "user_frustration_score": 0.0}},
+      {"role": "agent", "message": "Agent line three.", "time_in_call_secs": 70, "llm_override": "gemini-2.5-flash",
+       "conversation_turn_metrics": {"metrics": {"convai_llm_service_ttfb": {"elapsed_time": 5.0}}}},
+      {"role": "user", "message": "User line three.", "time_in_call_secs": 85,
+       "analysis": {"user_sentiment_score": -0.2, "user_frustration_score": 0.3}},
+      {"role": "agent", "message": null, "time_in_call_secs": 91,
+       "tool_calls": [{"tool_name": "record_outcome",
+                       "params_as_json": "{\"result\": \"pass\", \"turn\": 5, \"flags\": \"Urgency or threat of losing benefits, Requests a Social Security number\"}"}]},
+      {"role": "agent", "message": "Debrief line.", "time_in_call_secs": 93,
+       "conversation_turn_metrics": {"metrics": {"convai_llm_service_ttfb": {"elapsed_time": 1.6}}}}
+    ]
+  }
+}
