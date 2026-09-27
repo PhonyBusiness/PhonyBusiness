@@ -1,7 +1,6 @@
 import { Conversation } from "https://cdn.jsdelivr.net/npm/@elevenlabs/client@1.25.0/+esm";
 
-//const API = "https://clapped-boondocks-basics.ngrok-free.dev"; // swap for the deployed backend URL
-const API = "https://phony-business-7u6m4.ondigitalocean.app";
+const API = "https://phony-business-7u6m4.ondigitalocean.app"; // swap for the deployed backend URL
 
 const $ = (id) => document.getElementById(id);
 
