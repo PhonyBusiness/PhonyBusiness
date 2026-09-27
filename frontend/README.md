@@ -38,7 +38,7 @@ the page through an HTTPS URL, such as an ngrok tunnel to port 5500.
 
 `index.html` holds four screens, and `app.js` shows one at a time:
 
-1. **Start:** name, phone number, scenario, and difficulty. The gator gets more
+1. **Start:** name, scenario, and difficulty. The gator gets more
    evil as details are filled in, and the page theme follows the difficulty.
 2. **Ringing:** the gator, in disguise, calls the resident. Decline goes back;
    Accept starts the call.
