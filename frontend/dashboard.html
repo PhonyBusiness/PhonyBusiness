@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>PhonyBusiness · Trends</title>
   <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="mascots.css">
   <link rel="stylesheet" href="dashboard.css">
 </head>
 <body>
@@ -21,6 +22,28 @@
     </header>
 
     <p id="notice" class="notice" hidden></p>
+
+    <!-- Scoreboard: residents (passes) vs the gator (fails). The cast is loaded
+         from index.html by dashboard.js so both pages share one drawing. -->
+    <section id="score-stage" class="stage scoreboard" data-level="1" aria-label="Scoreboard">
+      <div class="score-side">
+        <div id="score-gator" class="score-art" aria-hidden="true"></div>
+        <p id="score-fail" class="score-value" aria-label="Scammer wins">–</p>
+      </div>
+      <div class="score-middle">
+        <p class="score-vs">vs</p>
+        <p id="score-caption" class="muted"></p>
+      </div>
+      <div class="score-side">
+        <div id="score-resident" class="score-art" aria-hidden="true"></div>
+        <p id="score-pass" class="score-value" aria-label="Resident wins">–</p>
+      </div>
+    </section>
+
+    <section class="card insights" aria-live="polite">
+      <h2>What the data says</h2>
+      <ul id="insights"></ul>
+    </section>
 
     <section class="tiles">
       <div class="tile">
@@ -45,6 +68,14 @@
       </div>
     </section>
 
+    <div class="section-row">
+      <h2 class="section-title">Over time</h2>
+      <div class="range" role="group" aria-label="Time range">
+        <button type="button" data-days="7">7 days</button>
+        <button type="button" data-days="30" class="active" aria-pressed="true">30 days</button>
+        <button type="button" data-days="90">90 days</button>
+      </div>
+    </div>
     <section class="charts">
       <figure class="card">
         <figcaption>Pass rate over time</figcaption>
@@ -60,6 +91,10 @@
           <p class="empty" hidden>No calls yet.</p>
         </div>
       </figure>
+    </section>
+
+    <h2 class="section-title">What fools people</h2>
+    <section class="ranks">
       <figure class="card">
         <figcaption>Red flags that fool people most <span class="muted">· failed calls</span></figcaption>
         <div class="rank-box">
@@ -72,6 +107,13 @@
         <div class="rank-box">
           <ol id="rank-scenarios" class="rank"></ol>
           <p class="empty" hidden>Shown once a scenario has at least 5 calls.</p>
+        </div>
+      </figure>
+      <figure class="card">
+        <figcaption>Results by difficulty <span class="muted">· fail rate</span></figcaption>
+        <div class="rank-box">
+          <ol id="rank-difficulty" class="rank"></ol>
+          <p class="empty" hidden>Shown once a level has at least 5 calls.</p>
         </div>
       </figure>
     </section>

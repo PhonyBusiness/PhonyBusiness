@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>PhonyBusiness</title>
   <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="mascots.css">
 </head>
 <body>
   <main class="phone">
@@ -13,6 +14,113 @@
     <section id="screen-start" class="screen">
       <h1>PhonyBusiness</h1>
       <p class="muted">Practice spotting phone scams in a safe, simulated call.</p>
+
+      <!-- Mascots: the gator scammer gets more evil as the form fills in (data-level 0-3);
+           both react to difficulty via body[data-difficulty]. -->
+      <div id="stage" class="stage" data-level="0" aria-hidden="true">
+        <p id="gator-line" class="bubble">Hmm… who's there?</p>
+        <div class="cast">
+          <svg class="gator" viewBox="0 0 160 160">
+            <defs>
+              <clipPath id="g-eye-l"><circle cx="56" cy="54" r="13"/></clipPath>
+              <clipPath id="g-eye-r"><circle cx="104" cy="54" r="13"/></clipPath>
+              <clipPath id="g-mouth-2"><path d="M50 104 Q82 110 112 96 Q86 124 50 104Z"/></clipPath>
+              <clipPath id="g-mouth-3"><path d="M38 98 Q80 108 122 92 Q86 134 38 98Z"/></clipPath>
+            </defs>
+            <!-- suit and tie -->
+            <path d="M22 160 Q24 128 56 120 L104 120 Q136 128 138 160Z" fill="#2b2f3a"/>
+            <path d="M64 120 L80 146 L96 120Z" fill="#f2f2f2"/>
+            <path d="M76 124 L84 124 L82 132 L87 152 L80 159 L73 152 L78 132Z" fill="#d7263d"/>
+            <g class="g-head">
+              <circle cx="56" cy="54" r="20" class="g-skin"/>
+              <circle cx="104" cy="54" r="20" class="g-skin"/>
+              <ellipse cx="80" cy="90" rx="60" ry="36" class="g-skin"/>
+              <ellipse cx="80" cy="107" rx="46" ry="16" fill="#b9d98a"/>
+              <g fill="#468f37">
+                <circle cx="38" cy="82" r="3"/><circle cx="46" cy="74" r="2.5"/>
+                <circle cx="122" cy="82" r="3"/><circle cx="114" cy="74" r="2.5"/>
+              </g>
+              <g fill="#468f37">
+                <circle cx="80" cy="50" r="4"/><circle cx="80" cy="60" r="3.5"/><circle cx="80" cy="69" r="3"/>
+              </g>
+              <ellipse cx="80" cy="80" rx="18" ry="8" fill="#6cc157" stroke="#468f37" stroke-width="2"/>
+              <g fill="#1f3d22">
+                <ellipse cx="73" cy="80" rx="3" ry="2"/><ellipse cx="87" cy="80" rx="3" ry="2"/>
+              </g>
+              <!-- eyes: lids slide down and tilt to squint -->
+              <g clip-path="url(#g-eye-l)">
+                <circle cx="56" cy="54" r="13" class="g-iris"/>
+                <ellipse class="g-pupil" cx="56" cy="55" rx="3.5" ry="9"/>
+                <rect class="g-lid g-lid-l" x="34" y="11" width="44" height="30"/>
+              </g>
+              <g clip-path="url(#g-eye-r)">
+                <circle cx="104" cy="54" r="13" class="g-iris"/>
+                <ellipse class="g-pupil" cx="104" cy="55" rx="3.5" ry="9"/>
+                <rect class="g-lid g-lid-r" x="82" y="11" width="44" height="30"/>
+              </g>
+              <circle cx="56" cy="54" r="13" class="g-line"/>
+              <circle cx="104" cy="54" r="13" class="g-line"/>
+              <path class="g-brow g-brow-l" d="M42 31 L70 31"/>
+              <path class="g-brow g-brow-r" d="M90 31 L118 31"/>
+              <!-- one mouth per level -->
+              <g class="g-mouth m0">
+                <path class="g-tooth" d="M62 104 L66 103 L64 97Z M92 106 L96 105 L94 99Z"/>
+                <path class="g-line" d="M44 102 Q58 98 70 103 Q86 108 116 100"/>
+              </g>
+              <g class="g-mouth m1">
+                <path class="g-tooth" d="M60 105 L65 105 L62 98Z M94 102 L99 100 L96 94Z"/>
+                <path class="g-line" d="M44 100 Q84 112 112 94"/>
+                <path class="g-line" d="M107 89 Q114 93 110 99"/>
+              </g>
+              <g class="g-mouth m2">
+                <path d="M50 104 Q82 110 112 96 Q86 124 50 104Z" fill="#5a1616"/>
+                <polygon clip-path="url(#g-mouth-2)" fill="#fff" points="50,90 112,90 112,96 108,103 104,99 100,106 96,101 92,108 88,102 84,109 80,103 76,109 72,103 68,109 64,103 60,108 56,103 52,107 50,104"/>
+                <path class="g-line" d="M50 104 Q82 110 112 96 Q86 124 50 104Z"/>
+              </g>
+              <g class="g-mouth m3">
+                <path d="M38 98 Q80 108 122 92 Q86 134 38 98Z" fill="#5a1616"/>
+                <g clip-path="url(#g-mouth-3)">
+                  <ellipse cx="86" cy="118" rx="18" ry="8" fill="#e0556a"/>
+                  <polygon fill="#fff" points="38,84 122,84 122,92 118,100 114,95 108,104 102,98 96,106 90,100 84,108 78,101 72,108 66,101 60,107 54,99 48,105 42,97 38,98"/>
+                  <polygon fill="#fff" points="58,124 64,112 70,124 94,124 100,112 106,124"/>
+                </g>
+                <path class="g-line" d="M38 98 Q80 108 122 92 Q86 134 38 98Z"/>
+                <path class="g-glint" d="M66 92 L68 98 L74 100 L68 102 L66 108 L64 102 L58 100 L64 98Z"/>
+              </g>
+            </g>
+          </svg>
+
+          <svg class="elder" viewBox="0 0 160 160">
+            <g class="e-body">
+              <!-- everyday adult: brown hair, polo shirt -->
+              <path d="M42 92 Q36 40 80 38 Q124 40 118 92 Q112 70 80 66 Q48 70 42 92Z" fill="#4a3022"/>
+              <path d="M24 160 Q26 128 60 120 L100 120 Q134 128 136 160Z" fill="#2f8f8a"/>
+              <rect x="70" y="106" width="20" height="16" fill="#f6cfa8"/>
+              <path d="M68 120 L80 134 L92 120Z" fill="#f6cfa8"/>
+              <path d="M60 119 L72 119 L67 131Z M100 119 L88 119 L93 131Z" fill="#e6f3f1"/>
+              <circle cx="44" cy="86" r="7" fill="#f6cfa8"/><circle cx="116" cy="86" r="7" fill="#f6cfa8"/>
+              <circle cx="80" cy="82" r="36" fill="#f6cfa8"/>
+              <path d="M45 76 Q45 43 80 42 Q115 43 115 76 Q108 57 90 55 Q74 63 55 61 Q49 66 45 76Z" fill="#4a3022"/>
+              <circle cx="58" cy="98" r="7" fill="#f29c9c" opacity="0.3"/>
+              <circle cx="102" cy="98" r="7" fill="#f29c9c" opacity="0.3"/>
+              <!-- eyes: happy arcs or dots -->
+              <g class="e-eyes-happy e-line">
+                <path d="M59 87 Q65 81 71 87"/><path d="M89 87 Q95 81 101 87"/>
+              </g>
+              <g class="e-eyes-dot" fill="#3b2a20">
+                <circle cx="65" cy="85" r="3.5"/><circle cx="95" cy="85" r="3.5"/>
+              </g>
+              <path class="e-brow e-brow-l" d="M57 68 Q65 65 73 68"/>
+              <path class="e-brow e-brow-r" d="M87 68 Q95 65 103 68"/>
+              <path class="e-line" d="M78 92 Q80 96 82 92"/>
+              <path class="e-mouth e-happy e-line" d="M68 102 Q80 112 92 102"/>
+              <path class="e-mouth e-curious e-line" d="M72 104 Q80 107 88 104"/>
+              <path class="e-mouth e-worried e-line" d="M68 108 Q72 103 76 106 Q80 109 84 105 Q88 102 92 107"/>
+              <path class="e-sweat" d="M120 60 Q126 70 120 74 Q114 70 120 60Z"/>
+            </g>
+          </svg>
+        </div>
+      </div>
 
       <label>Your first name
         <input id="name" type="text" placeholder="e.g. Maria" autocomplete="given-name">
@@ -36,6 +144,7 @@
           <option value="medium" selected>Medium</option>
           <option value="hard">Hard</option>
         </select>
+        <span id="difficulty-hint" class="hint"></span>
       </label>
 
       <p id="start-error" class="error"></p>
@@ -46,9 +155,14 @@
     <!-- 2. Ringing -->
     <section id="screen-ringing" class="screen center" hidden>
       <p class="muted">Incoming call</p>
-      <div class="avatar ringing">📞</div>
       <h2 class="caller-name">Unknown caller</h2>
       <p class="muted">mobile</p>
+      <!-- The start-screen cast, cloned in by app.js: the gator in a flimsy disguise
+           and the resident holding a buzzing phone. -->
+      <div id="ring-stage" class="stage ring-stage" data-level="1" aria-hidden="true">
+        <p id="ring-line" class="bubble"></p>
+        <div id="ring-cast" class="cast"></div>
+      </div>
       <div class="call-actions">
         <button id="btn-decline" class="round red" aria-label="Decline">✕</button>
         <button id="btn-accept" class="round green" aria-label="Accept">✓</button>
@@ -57,10 +171,15 @@
 
     <!-- 3. In call -->
     <section id="screen-call" class="screen center" hidden>
-      <div class="avatar">📞</div>
       <h2 class="caller-name">Unknown caller</h2>
       <p id="timer" class="timer">00:00</p>
-      <p id="call-status" class="muted">Connecting…</p>
+      <!-- Cloned cast (see app.js): the gator talks while the agent speaks,
+           the resident's mouth moves while you speak. -->
+      <div id="call-stage" class="stage call-stage listening" data-level="1" aria-hidden="true">
+        <div class="waves"><span></span><span></span><span></span></div>
+        <div id="call-cast" class="cast"></div>
+      </div>
+      <p id="call-status" class="muted" aria-live="polite">Connecting…</p>
       <div class="call-actions">
         <button id="btn-mute" class="round gray" aria-label="Mute">🎙</button>
         <button id="btn-hangup" class="round red" aria-label="Hang up">✕</button>
@@ -70,23 +189,34 @@
     <!-- 4. Recap -->
     <section id="screen-recap" class="screen" hidden>
       <p class="muted">This was a practice call.</p>
+
+      <!-- Ending scene (cloned cast, see app.js): class win / lose / stopped. -->
+      <div id="recap-stage" class="stage recap-stage" data-level="1" aria-hidden="true">
+        <p id="recap-line" class="bubble" hidden></p>
+        <div id="recap-cast" class="cast"></div>
+      </div>
+
       <div id="result-badge" class="badge">…</div>
       <p id="result-text"></p>
 
-      <h3>Red flags in this call</h3>
-      <ul id="flags"></ul>
+      <div id="flags-section" hidden>
+        <h3>Red flags in this call</h3>
+        <ul id="flag-chips" class="flag-chips"></ul>
+      </div>
 
-      <h3>Do</h3>
-      <ul id="dos"></ul>
-
-      <h3>Don't</h3>
-      <ul id="donts"></ul>
+      <div id="tips-section" hidden>
+        <h3>What to do next time</h3>
+        <ul id="tip-cards" class="tip-cards"></ul>
+      </div>
 
       <p class="muted">Got a real scam call? Report it at
         <a href="https://reportfraud.ftc.gov" target="_blank" rel="noopener">ReportFraud.ftc.gov</a>.
       </p>
 
-      <button id="btn-again" class="btn primary">Try another call</button>
+      <div class="next-steps">
+        <button id="btn-again" class="btn primary">Try another scenario</button>
+        <a href="dashboard.html" class="btn secondary">See how others did →</a>
+      </div>
     </section>
 
   </main>

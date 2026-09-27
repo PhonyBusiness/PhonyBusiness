@@ -187,12 +187,101 @@ const sentimentChart = new Chart($("chart-sentiment"), {
 
 // ---------- Rendering ----------
 
-// GET /analytics/overview → { calls, pass_rate, fail_rate, avg_decision_turn, ... }
+// Latest responses, kept so the insights can combine them.
+let lastOverview = null;
+let lastRisk = null;
+
+// GET /analytics/overview → { calls, pass, fail, stopped, pass_rate, avg_decision_turn, ... }
 function renderOverview(overview) {
+  lastOverview = overview;
   $("stat-total").textContent = overview.calls ?? "–";
   $("stat-pass").textContent = pct(overview.pass_rate);
   $("stat-fail").textContent = pct(overview.fail_rate);
   $("stat-turn").textContent = overview.avg_decision_turn == null ? "–" : `Turn ${overview.avg_decision_turn}`;
+  renderScoreboard(overview);
+  renderInsights();
+}
+
+// Residents (passes) vs the gator (fails); the cast reacts to who's ahead.
+function renderScoreboard(overview) {
+  const passes = overview.pass ?? 0;
+  const fails = overview.fail ?? 0;
+  $("score-pass").textContent = overview.calls ? passes : "–";
+  $("score-fail").textContent = overview.calls ? fails : "–";
+  $("score-caption").textContent = !overview.calls
+    ? "No calls yet"
+    : overview.stopped ? `${overview.stopped} stopped with the safe word` : "";
+
+  const stage = $("score-stage");
+  const winning = passes >= fails;
+  stage.classList.toggle("winning", overview.calls > 0 && winning);
+  stage.classList.toggle("losing", overview.calls > 0 && !winning);
+  stage.dataset.level = !overview.calls ? 1 : winning ? 0 : 3;
+}
+
+// Build one insight line from text and { strong } parts, without innerHTML.
+function insight(parts) {
+  const li = document.createElement("li");
+  for (const part of parts) {
+    if (typeof part === "string") {
+      li.append(part);
+    } else {
+      const strong = document.createElement("strong");
+      strong.textContent = part.strong;
+      li.append(strong);
+    }
+  }
+  return li;
+}
+
+function difficultyLabel(value) {
+  if (/^\d+$/.test(value)) return `Level ${value}`;
+  return `${value[0].toUpperCase()}${value.slice(1)}`;
+}
+
+// Plain-language takeaways from the overview and risk data (up to three).
+function renderInsights() {
+  const lines = [];
+  const risk = lastRisk || {};
+
+  const topFlag = (risk.red_flags || []).find((row) => row.on_fail > 0);
+  if (topFlag) {
+    lines.push(insight(["🚩 ", { strong: topFlag.flag }, ` fools people most — ${topFlag.on_fail} failed calls.`]));
+  }
+
+  const hardest = (risk.by_scenario || []).find((row) => !row.suppressed && row.fail_rate != null);
+  if (hardest) {
+    lines.push(insight(["🎯 ", { strong: scenarioName(hardest) }, ` is the hardest scam: ${pct(hardest.fail_rate)} of people fall for it.`]));
+  }
+
+  const levels = Object.fromEntries((risk.by_difficulty || [])
+    .filter((row) => !row.suppressed && row.fail_rate != null)
+    .map((row) => [row.difficulty, row.fail_rate]));
+  if (levels.easy != null && levels.hard != null) {
+    lines.push(insight(["📈 Hard calls fool ", { strong: pct(levels.hard) }, ` of people, vs ${pct(levels.easy)} on easy.`]));
+  }
+
+  const turn = lastOverview?.avg_decision_turn;
+  if (lines.length < 3 && turn != null) {
+    const secs = lastOverview.avg_decision_secs;
+    lines.push(insight(["⏱ People usually decide by ", { strong: `turn ${turn}` }, secs ? ` — about ${Math.round(secs)} seconds in.` : "."]));
+  }
+
+  if (!lines.length) lines.push(insight(["Insights will appear once calls come in."]));
+  $("insights").replaceChildren(...lines.slice(0, 3));
+}
+
+// Reuse the start page's gator and resident drawings (one source of truth).
+async function loadScoreboardCast() {
+  try {
+    const html = await (await fetch("index.html")).text();
+    const page = new DOMParser().parseFromString(html, "text/html");
+    const [gator, resident] = page.querySelectorAll("#stage .cast svg");
+    $("score-gator").append(document.importNode(gator, true));
+    $("score-resident").append(document.importNode(resident, true));
+  } catch {
+    // The scoreboard still works with just the numbers.
+  }
 }
 
 // GET /analytics/wellbeing → { stop_rate, peak_frustration_distribution, sentiment_labels, ... }
@@ -239,8 +328,23 @@ function renderTrends(days) {
   setEmpty("chart-frustration-trend", !days.some((d) => d.avg_peak_frustration != null));
 }
 
-// GET /analytics/risk → { by_scenario: [...], red_flags: [{ flag, calls, on_fail, on_pass }] }
+// GET /analytics/risk → { by_scenario, by_difficulty, red_flags: [{ flag, calls, on_fail, on_pass }] }
 function renderRisk(risk) {
+  lastRisk = risk;
+  renderInsights();
+
+  // Easy → medium → hard, then any other levels; small groups are suppressed for privacy.
+  const order = ["easy", "medium", "hard"];
+  const rank = (d) => (order.includes(d) ? order.indexOf(d) : order.length);
+  const levels = (risk.by_difficulty || [])
+    .filter((row) => !row.suppressed && row.fail_rate != null && row.difficulty)
+    .sort((a, b) => rank(a.difficulty) - rank(b.difficulty));
+  renderRank("rank-difficulty", levels.map((row) => ({
+    label: difficultyLabel(row.difficulty),
+    value: row.fail_rate,
+    note: `${pct(row.fail_rate)} failed · ${row.calls} calls`,
+  })));
+
   // Already sorted by most failures; keep the top 6. Bars scale to the worst flag.
   const flags = (risk.red_flags || []).filter((row) => row.on_fail > 0).slice(0, 6);
   const mostFails = Math.max(...flags.map((row) => row.on_fail), 1);
@@ -403,21 +507,41 @@ $("btn-close-detail").onclick = () => {
 
 // ---------- Refresh ----------
 
+// Days shown in the "Over time" charts; only /analytics/trends takes a range.
+let rangeDays = 30;
+
+const loadTrends = () => getJson(`/analytics/trends?days=${rangeDays}`).then(renderTrends);
+
+function showNotice(results) {
+  const notice = $("notice");
+  notice.hidden = results.every((r) => r.status === "fulfilled");
+  notice.textContent = "Some stats couldn't be loaded. Try refreshing.";
+}
+
 async function refresh() {
   $("btn-refresh").disabled = true;
   const results = await Promise.allSettled([
     getJson("/analytics/overview").then(renderOverview),
     getJson("/analytics/wellbeing").then(renderWellbeing),
     getJson("/analytics/risk").then(renderRisk),
-    getJson("/analytics/trends?days=30").then(renderTrends),
+    loadTrends(),
     getJson("/analytics/conversations?limit=10").then(renderRecent),
   ]);
-
-  const notice = $("notice");
-  notice.hidden = results.every((r) => r.status === "fulfilled");
-  notice.textContent = "Some stats couldn't be loaded. Try refreshing.";
+  showNotice(results);
   $("btn-refresh").disabled = false;
 }
 
+document.querySelectorAll(".range button").forEach((button) => {
+  button.onclick = async () => {
+    rangeDays = Number(button.dataset.days);
+    document.querySelectorAll(".range button").forEach((b) => {
+      b.classList.toggle("active", b === button);
+      b.setAttribute("aria-pressed", String(b === button));
+    });
+    showNotice(await Promise.allSettled([loadTrends()]));
+  };
+});
+
 $("btn-refresh").onclick = refresh;
+loadScoreboardCast();
 refresh();

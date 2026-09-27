@@ -1,10 +1,15 @@
 * { box-sizing: border-box; }
 [hidden] { display: none !important; }
 
+/* Theme colors; mascots.css changes them per difficulty. Registered so they animate. */
+@property --glow { syntax: "<color>"; inherits: true; initial-value: transparent; }
+@property --accent { syntax: "<color>"; inherits: true; initial-value: #2f7cf6; }
+
 body {
   margin: 0;
   min-height: 100vh;
-  background: #111;
+  background: radial-gradient(120% 60% at 50% 0%, var(--glow), transparent 70%) fixed, #111;
+  transition: --glow 0.6s, --accent 0.6s;
   color: #f5f5f5;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
@@ -33,7 +38,11 @@ input, select {
   border: 1px solid #333;
   background: #1d1d1d;
   color: #f5f5f5;
+  transition: border-color 0.6s;
 }
+input:focus, select:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+.hint { font-size: 13px; color: #9a9a9a; min-height: 1em; }
+body[data-difficulty="hard"] .hint { color: #ff6b61; }
 
 .btn {
   padding: 14px;
@@ -43,7 +52,7 @@ input, select {
   border-radius: 12px;
   cursor: pointer;
 }
-.btn.primary { background: #2f7cf6; color: #fff; }
+.btn.primary { background: var(--accent); color: #fff; }
 
 /* Caller avatar with pulsing ring while ringing */
 .avatar {
@@ -90,6 +99,31 @@ input, select {
 .badge.pass { background: #34c759; color: #06260f; }
 .badge.fail { background: #ff3b30; color: #fff; }
 .badge.caution { background: #ffcc00; color: #2b2200; }
+
+#flags-section h3, #tips-section h3 { margin-bottom: 10px; }
+
+/* Red flags as chips */
+.flag-chips { list-style: none; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
+.flag-chips li {
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: #2a1a1a;
+  border: 1px solid #5a2a2a;
+  color: #ffb4ae;
+  font-size: 14px;
+  line-height: 1.3;
+}
+.flag-chips li::before { content: "🚩 "; }
+
+/* One card per tip: do on top, don't below */
+.tip-cards { list-style: none; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+.tip-cards li { padding: 12px 14px; border-radius: 12px; background: #1d1d1d; font-size: 14px; line-height: 1.45; }
+.tip-cards p { margin: 0; }
+.tip-cards p + p { margin-top: 6px; color: #c9c9c9; }
+
+.next-steps { display: flex; flex-direction: column; gap: 10px; margin-top: 4px; }
+.btn.secondary { background: #262626; color: #f5f5f5; }
+a.btn { text-align: center; text-decoration: none; }
 
 ul { margin: 0; padding-left: 20px; line-height: 1.5; }
 a { color: #6aa8ff; }
