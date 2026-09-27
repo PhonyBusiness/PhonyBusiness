@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PhonyBusiness</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="phone">
+
+    <!-- 1. Start -->
+    <section id="screen-start" class="screen">
+      <h1>PhonyBusiness</h1>
+      <p class="muted">Practice spotting phone scams in a safe, simulated call.</p>
+
+      <label>Your first name
+        <input id="name" type="text" placeholder="e.g. Maria" autocomplete="given-name">
+      </label>
+
+      <label>Your phone number
+        <input id="phone" type="tel" placeholder="e.g. (305) 555-0123" autocomplete="tel" inputmode="tel">
+      </label>
+
+      <label>Scenario
+        <select id="scenario">
+          <option value="benefits_imposter">Benefits imposter</option>
+          <option value="tech_support">Tech support</option>
+          <option value="family_emergency">Family emergency</option>
+        </select>
+      </label>
+
+      <label>Difficulty
+        <select id="difficulty">
+          <option value="easy">Easy</option>
+          <option value="medium" selected>Medium</option>
+          <option value="hard">Hard</option>
+        </select>
+      </label>
+
+      <p id="start-error" class="error"></p>
+      <button id="btn-start" class="btn primary">Start practice call</button>
+      <a href="dashboard.html" class="muted">See trends →</a>
+    </section>
+
+    <!-- 2. Ringing -->
+    <section id="screen-ringing" class="screen center" hidden>
+      <p class="muted">Incoming call</p>
+      <div class="avatar ringing">📞</div>
+      <h2 class="caller-name">Unknown caller</h2>
+      <p class="muted">mobile</p>
+      <div class="call-actions">
+        <button id="btn-decline" class="round red" aria-label="Decline">✕</button>
+        <button id="btn-accept" class="round green" aria-label="Accept">✓</button>
+      </div>
+    </section>
+
+    <!-- 3. In call -->
+    <section id="screen-call" class="screen center" hidden>
+      <div class="avatar">📞</div>
+      <h2 class="caller-name">Unknown caller</h2>
+      <p id="timer" class="timer">00:00</p>
+      <p id="call-status" class="muted">Connecting…</p>
+      <div class="call-actions">
+        <button id="btn-mute" class="round gray" aria-label="Mute">🎙</button>
+        <button id="btn-hangup" class="round red" aria-label="Hang up">✕</button>
+      </div>
+    </section>
+
+    <!-- 4. Recap -->
+    <section id="screen-recap" class="screen" hidden>
+      <p class="muted">This was a practice call.</p>
+      <div id="result-badge" class="badge">…</div>
+      <p id="result-text"></p>
+
+      <h3>Red flags in this call</h3>
+      <ul id="flags"></ul>
+
+      <h3>Do</h3>
+      <ul id="dos"></ul>
+
+      <h3>Don't</h3>
+      <ul id="donts"></ul>
+
+      <p class="muted">Got a real scam call? Report it at
+        <a href="https://reportfraud.ftc.gov" target="_blank" rel="noopener">ReportFraud.ftc.gov</a>.
+      </p>
+
+      <button id="btn-again" class="btn primary">Try another call</button>
+    </section>
+
+  </main>
+  <script type="module" src="app.js"></script>
+</body>
+</html>
