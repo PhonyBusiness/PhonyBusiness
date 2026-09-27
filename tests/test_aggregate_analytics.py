@@ -7,7 +7,7 @@ from pathlib import Path
 
 import pytest
 
-from backend import main
+from backend import deps
 
 FIXTURE = json.loads((Path(__file__).parent / "fixtures" / "post_call_webhook.json").read_text())
 TODAY = datetime.now(timezone.utc).replace(hour=12, minute=0, second=0, microsecond=0)
@@ -31,7 +31,7 @@ def post(client, n, result, persona="Officer Daniels from the Federal Benefits O
 
 @pytest.fixture
 def seeded(client, monkeypatch):
-    monkeypatch.setattr(main.settings, "analytics_min_group_size", 5)
+    monkeypatch.setattr(deps.settings, "analytics_min_group_size", 5)
     for n in range(4):
         post(client, n, "pass", day=0)
     for n in range(2):

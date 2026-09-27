@@ -56,3 +56,13 @@ def get_tips(flags: list[str] | None) -> list[dict]:
     """Look up tips for the given flags. Falls back to general guidance if none match."""
     matched = [TIP_BANK[flag] | {"label": flag} for flag in (flags or []) if flag in TIP_BANK]
     return matched or FALLBACK_TIPS
+
+
+def format_tips(result: str, flags: list[str] | None) -> str:
+    """Structured plain-text reply for the agent to read aloud in coach mode."""
+    lines = [f"RESULT: {result}", "TIPS:"]
+    for tip in get_tips(flags):
+        lines.append(f"•  Red flag: {tip['label']}")
+        lines.append(f"  Do: {tip['do']}")
+        lines.append(f"  Don't: {tip['dont']}")
+    return "\n".join(lines)
