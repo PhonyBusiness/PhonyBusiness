@@ -135,6 +135,7 @@ $("btn-accept").onclick = async () => {
     const session = await Conversation.startSession({
       signedUrl: callData.signed_url,
       dynamicVariables: callData.dynamic_variables,
+      ...(callData.voice_id && { overrides: { tts: { voiceId: callData.voice_id } } }),
       onConnect: () => {
         if (callEnded) return;
         $("call-status").textContent = "";
