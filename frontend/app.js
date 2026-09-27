@@ -68,10 +68,25 @@ async function loadScenarios() {
   }
 }
 
+// Normalize a typed phone number to E.164 ("+13055550123"); returns null if invalid.
+// Ten digits are treated as a US number.
+function toE164(input) {
+  const digits = input.replace(/[^\d+]/g, "");
+  if (/^\+[1-9]\d{7,14}$/.test(digits)) return digits;
+  if (/^\d{10}$/.test(digits)) return `+1${digits}`;
+  if (/^1\d{10}$/.test(digits)) return `+${digits}`;
+  return null;
+}
+
 $("btn-start").onclick = async () => {
   const firstName = $("name").value.trim();
   if (!firstName) {
     $("start-error").textContent = "Please enter your first name.";
+    return;
+  }
+  const phoneNumber = toE164($("phone").value);
+  if (!phoneNumber) {
+    $("start-error").textContent = "Please enter a valid phone number.";
     return;
   }
   $("start-error").textContent = "";
@@ -80,6 +95,7 @@ $("btn-start").onclick = async () => {
   try {
     callData = await api("/calls/start", {
       first_name: firstName,
+      phone_number: phoneNumber,
       scenario: $("scenario").value,
       difficulty: $("difficulty").value,
     });
@@ -231,15 +247,16 @@ async function showRecap(initial) {
   renderRecap(initial);
   show("recap");
 
-  // Poll until the post-call re-score lands (up to ~20 seconds).
+  // Fetch the result once the call is ended. Usually the first request is enough;
+  // retry briefly (up to 3 times) only if the hangup hasn't been recorded yet.
   const id = callId;
-  for (let i = 0; i < 10 && id === callId; i++) {
+  for (let i = 0; i < 3 && id === callId; i++) {
     try {
       const call = await api(`/calls/${id}`);
       renderRecap(call);
-      if (call.score) return;
+      if (call.status === "ended" && call.outcome) return;
     } catch {
-      // Endpoint may not exist yet; keep trying.
+      // Network hiccup; try again.
     }
     await new Promise((r) => setTimeout(r, 2000));
   }
