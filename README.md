@@ -10,6 +10,8 @@ No real phone number. No real risk. Just practice.
 
 Built at ShellHacks 2026.
 
+![alt text](<Poster (Letter)@1x.png>)
+
 ---
 
 ## Why this exists
