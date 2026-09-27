@@ -1,0 +1,11 @@
+.venv/
+__pycache__/
+*.pyc
+.git/
+.pytest_cache/
+tests/
+.env
+.env.*
+!.env.example
+app.py
+phonybusiness.egg-info/
