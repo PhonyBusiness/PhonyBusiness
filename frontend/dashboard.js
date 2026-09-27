@@ -328,7 +328,20 @@ function renderTrends(days) {
   setEmpty("chart-frustration-trend", !days.some((d) => d.avg_peak_frustration != null));
 }
 
-// GET /analytics/risk → { by_scenario, by_difficulty, red_flags: [{ flag, calls, on_fail, on_pass }] }
+// What Gemini's review says a resident gave away, in plain words.
+const DISCLOSED_LABELS = {
+  ssn: "Social Security number",
+  verification_code: "Verification code",
+  card_number: "Card number",
+  account_pin: "Account PIN",
+  bank_account: "Bank account details",
+  gift_card: "Gift card numbers",
+  agreed_to_pay: "Agreed to pay",
+  personal_details: "Personal details",
+};
+const disclosedLabel = (key) => DISCLOSED_LABELS[key] || key;
+
+// GET /analytics/risk → { by_scenario, by_difficulty, red_flags, disclosed: [{ disclosed, calls }] }
 function renderRisk(risk) {
   lastRisk = risk;
   renderInsights();
@@ -352,6 +365,15 @@ function renderRisk(risk) {
     label: row.flag,
     value: row.on_fail / mostFails,
     note: `${row.on_fail} failed · ${row.on_pass} passed`,
+  })));
+
+  // Already sorted by most calls; bars scale to the most common disclosure.
+  const gaveAway = (risk.disclosed || []).slice(0, 6);
+  const mostGiven = Math.max(...gaveAway.map((row) => row.calls), 1);
+  renderRank("rank-disclosed", gaveAway.map((row) => ({
+    label: disclosedLabel(row.disclosed),
+    value: row.calls / mostGiven,
+    note: `${row.calls} ${row.calls === 1 ? "call" : "calls"}`,
   })));
 
   // Scenarios with too few calls come back suppressed (privacy) and are left off.
@@ -459,6 +481,15 @@ async function showDetail(conversationId) {
     ? "–"
     : `${clock(outcome.decided_at_secs)}${outcome.turn ? ` (turn ${outcome.turn})` : ""}`;
   $("detail-ended").textContent = ENDED_BY[call.termination_reason] || call.termination_reason || "–";
+
+  const review = call.gemini;
+  $("detail-review").hidden = !review;
+  if (review) {
+    $("detail-review-rating").replaceChildren(resultPill(review.rating));
+    $("detail-review-reason").textContent = review.reason || "";
+    const given = (review.disclosed || []).map(disclosedLabel);
+    $("detail-review-disclosed").textContent = given.length ? `Gave away: ${given.join(", ")}` : "Gave away nothing sensitive";
+  }
 
   // Show the panel before drawing: a chart laid out while hidden has zero size.
   $("detail").hidden = false;

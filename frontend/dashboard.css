@@ -183,3 +183,14 @@ tr.selected { background: #1f2a3a; }
 .tips { display: flex; flex-direction: column; gap: 10px; padding-left: 20px; }
 .tips strong { display: block; }
 .tips span { display: block; color: #ccc; font-size: 14px; }
+
+/* Gemini's review in the call detail panel. */
+.review-box {
+  margin: 16px 0;
+  padding: 12px 16px;
+  border-left: 3px solid #7a5cff;
+  background: #1b1b1b;
+  border-radius: 8px;
+}
+.review-box p { margin: 6px 0 0; }
+.review-box p:first-child { margin: 0; }

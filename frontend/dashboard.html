@@ -110,6 +110,13 @@
         </div>
       </figure>
       <figure class="card">
+        <figcaption>What residents gave away <span class="muted">· Gemini review</span></figcaption>
+        <div class="rank-box">
+          <ol id="rank-disclosed" class="rank"></ol>
+          <p class="empty" hidden>Shown once calls are reviewed by Gemini.</p>
+        </div>
+      </figure>
+      <figure class="card">
         <figcaption>Results by difficulty <span class="muted">· fail rate</span></figcaption>
         <div class="rank-box">
           <ol id="rank-difficulty" class="rank"></ol>
@@ -171,6 +178,13 @@
         <div><p class="tile-label">Call length</p><p id="detail-duration" class="fact-value">–</p></div>
         <div><p class="tile-label">Decided at</p><p id="detail-decided" class="fact-value">–</p></div>
         <div><p class="tile-label">Ended by</p><p id="detail-ended" class="fact-value">–</p></div>
+      </div>
+
+      <div id="detail-review" class="review-box" hidden>
+        <p class="tile-label">AI review (Gemini)</p>
+        <p id="detail-review-rating"></p>
+        <p id="detail-review-reason"></p>
+        <p id="detail-review-disclosed" class="muted"></p>
       </div>
 
       <div class="detail-charts">
