@@ -32,13 +32,6 @@ class StartCallRequest(BaseModel):
     scenario: str
     difficulty: str
 
-
-class StartCallResponse(BaseModel):
-    call_id: str
-    caller_name: str
-    signed_url: str
-    dynamic_variables: dict[str, str]
-
 class StartCallResponse(BaseModel):
     call_id: str
     caller_name: str
