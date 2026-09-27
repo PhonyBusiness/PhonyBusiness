@@ -1,4 +1,4 @@
-const API = "http://localhost:8000"; // swap for the deployed backend URL
+const API = "https://clapped-boondocks-basics.ngrok-free.dev"; // swap for the deployed backend URL
 
 const $ = (id) => document.getElementById(id);
 
@@ -8,7 +8,8 @@ const INK_MUTED = "#9a9a9a";
 const GRID = "#2a2a2a";
 
 async function getJson(path) {
-  const res = await fetch(`${API}${path}`);
+  // ngrok's free tier serves an HTML warning page to browsers unless this header is sent.
+  const res = await fetch(`${API}${path}`, { headers: { "ngrok-skip-browser-warning": "true" } });
   if (!res.ok) throw new Error(`${path} failed with HTTP ${res.status}`);
   return res.json();
 }
