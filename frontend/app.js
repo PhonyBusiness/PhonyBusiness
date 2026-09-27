@@ -97,10 +97,6 @@ const touched = { scenario: false, difficulty: false };
 
 function gatorLine(field, name) {
   if (field === "name" && name) return `${name}… what a lovely name.`;
-  if (field === "phone") {
-    if (toE164($("phone").value)) return "Ooh, your number. I'll be calling…";
-    if ($("phone").value.trim()) return "Go on… I'm writing this down.";
-  }
   if (field === "scenario") return SCENARIO_LINES[$("scenario").value] || "Oh, I have just the story for you…";
   if (field === "difficulty") return DIFFICULTY[$("difficulty").value]?.line;
   return "Hmm… who's there?";
@@ -108,10 +104,8 @@ function gatorLine(field, name) {
 
 function updateGator(field) {
   const name = $("name").value.trim();
-  // Four details (name, a valid phone, scenario, difficulty) map onto the gator's
-  // four looks (0–3), so the last detail keeps the full evil grin.
-  const filled = (name ? 1 : 0) + (toE164($("phone").value) ? 1 : 0) + touched.scenario + touched.difficulty;
-  $("stage").dataset.level = Math.min(filled, 3);
+  // One step more evil per detail (name, scenario, difficulty): looks 0–3.
+  $("stage").dataset.level = (name ? 1 : 0) + touched.scenario + touched.difficulty;
   const bubble = $("gator-line");
   bubble.textContent = gatorLine(field, name);
   bubble.classList.remove("pop");
@@ -126,7 +120,6 @@ function applyDifficulty() {
 }
 
 $("name").addEventListener("input", () => updateGator("name"));
-$("phone").addEventListener("input", () => updateGator("phone"));
 $("scenario").addEventListener("change", () => {
   touched.scenario = true;
   updateGator("scenario");
@@ -144,25 +137,10 @@ $("difficulty").addEventListener("change", () => {
 });
 applyDifficulty();
 
-// Normalize a typed phone number to E.164 ("+13055550123"); returns null if invalid.
-// Ten digits are treated as a US number.
-function toE164(input) {
-  const digits = input.replace(/[^\d+]/g, "");
-  if (/^\+[1-9]\d{7,14}$/.test(digits)) return digits;
-  if (/^\d{10}$/.test(digits)) return `+1${digits}`;
-  if (/^1\d{10}$/.test(digits)) return `+${digits}`;
-  return null;
-}
-
 $("btn-start").onclick = async () => {
   const firstName = $("name").value.trim();
   if (!firstName) {
     $("start-error").textContent = "Please enter your first name.";
-    return;
-  }
-  const phoneNumber = toE164($("phone").value);
-  if (!phoneNumber) {
-    $("start-error").textContent = "Please enter a valid phone number.";
     return;
   }
   $("start-error").textContent = "";
@@ -171,7 +149,6 @@ $("btn-start").onclick = async () => {
   try {
     callData = await api("/calls/start", {
       first_name: firstName,
-      phone_number: phoneNumber,
       scenario: $("scenario").value,
       difficulty: $("difficulty").value,
     });
