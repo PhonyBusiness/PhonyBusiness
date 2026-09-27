@@ -161,5 +161,10 @@ class MongoDatabase:
         if call_id and ObjectId.is_valid(call_id):
             self.db["calls"].update_one(
                 {"_id": ObjectId(call_id)},
-                {"$set": {"score": score["rating"], "updated_at": datetime.now(timezone.utc)}},
+                {"$set": {
+                    "score": score["rating"],
+                    "score_reason": score["reason"],
+                    "disclosed": score["disclosed"],
+                    "updated_at": datetime.now(timezone.utc),
+                }},
             )

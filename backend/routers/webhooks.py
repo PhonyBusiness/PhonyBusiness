@@ -53,6 +53,8 @@ async def post_call_webhook(request: Request, background: BackgroundTasks) -> di
 def score_and_save(payload: dict, conversation: dict) -> None:
     scenario = get_scenario(conversation["scenario_name"]) if conversation.get("scenario_name") else None
     recorded = (conversation.get("outcome") or {}).get("result")
+    if recorded == "stopped":
+        return  # The safe word ends the call with no judgment, so it isn't scored.
     score = score_call(payload, scenario, recorded, settings.gemini_api_key, settings.gemini_model)
     if score is not None:
         mongo.save_score(conversation["conversation_id"], conversation.get("call_id"), score)

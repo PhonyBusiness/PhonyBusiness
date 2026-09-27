@@ -143,6 +143,23 @@ def test_webhook_scores_in_background_and_updates_call_and_dashboard(client, mon
     assert stored["score"] == "fail" and stored["gemini"]["disclosed"] == ["ssn"]
     assert mongo.db["calls"].find_one()["score"] == "fail"
 
+    recap = client.get(f"/calls/{call_id}").json()
+    assert recap["score"] == "fail" and recap["disclosed"] == ["ssn"]
+    assert recap["score_reason"].startswith("You started reading")
+
     detail = client.get("/analytics/conversations/conv_test_1").json()
     assert detail["gemini"]["reason"].startswith("You started reading")
     assert client.get("/analytics/risk").json()["disclosed"] == [{"disclosed": "ssn", "calls": 1}]
+
+
+def test_safe_word_calls_are_not_scored(client, mongo, monkeypatch):
+    monkeypatch.setattr(deps.settings, "gemini_api_key", "key")
+    sent = []
+    monkeypatch.setattr(gemini_scoring.httpx, "post", lambda *a, **k: sent.append(a))
+    payload = json.loads(FIXTURE.read_text())
+    tool_turn = payload["data"]["transcript"][6]["tool_calls"][0]
+    tool_turn["params_as_json"] = json.dumps({"result": "stopped", "turn": 2, "flags": ""})
+
+    client.post("/webhooks/post-call", json=payload)
+    assert sent == []
+    assert mongo.get_conversation("conv_test_1")["score"] is None

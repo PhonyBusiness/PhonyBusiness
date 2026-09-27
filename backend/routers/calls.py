@@ -133,6 +133,8 @@ class CallDetailResponse(BaseModel):
     status: str
     outcome: str | None
     score: str | None
+    score_reason: str | None = None
+    disclosed: list[str] | None = None
     flags: list[str] | None
     tips: list[TipItem] | None
 
@@ -158,6 +160,8 @@ def get_call(call_id: str) -> CallDetailResponse:
         status=call["status"],
         outcome=call.get("outcome"),
         score=call.get("score"),
+        score_reason=call.get("score_reason"),
+        disclosed=call.get("disclosed"),
         flags=flags,
         tips=tips,
     )
