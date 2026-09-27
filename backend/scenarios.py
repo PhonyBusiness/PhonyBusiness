@@ -39,18 +39,6 @@ SCENARIOS = [
         "caller_display_name": "SecureTech Support",
     },
     {
-        "name": "family_emergency",
-        "display_name": "Family emergency",
-        "persona": "your grandson, in trouble and scared",
-        "ask": "send bail money right away, before he can call anyone else",
-        "red_flags": [
-            "Claims to be a family member in distress",
-            "Asks for secrecy",
-            "Requests money via an unusual payment method",
-        ],
-        "caller_display_name": "Unknown Caller",
-    },
-    {
         "name": "tax_debt",
         "display_name": "Tax debt",
         "persona": "Agent Collins from the Federal Revenue Office",
