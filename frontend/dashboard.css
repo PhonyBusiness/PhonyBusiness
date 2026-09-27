@@ -59,6 +59,54 @@
 .chart-box { position: relative; height: 240px; }
 
 .section-title { font-size: 17px; margin: 8px 0 -4px; }
+.section-row { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 8px; }
+.section-row .section-title { margin: 8px 0 -4px; }
+
+/* Time range: segmented buttons */
+.range { display: inline-flex; padding: 3px; border-radius: 10px; background: #1a1a1a; gap: 2px; }
+.range button {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: #9a9a9a;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.range button.active { background: #2f2f2f; color: #f5f5f5; }
+
+/* Scoreboard: gator vs residents */
+.scoreboard {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: end;
+  gap: 8px;
+  padding: 16px 16px 12px;
+}
+.score-side { display: flex; flex-direction: column; align-items: center; text-align: center; }
+.score-art svg { width: min(150px, 30vw); height: auto; display: block; overflow: visible; }
+.score-value { margin: 6px 0 0; font-size: clamp(32px, 8vw, 48px); font-weight: 800; font-variant-numeric: tabular-nums; }
+.score-middle { align-self: center; text-align: center; max-width: 180px; }
+.score-vs { margin: 0; font-size: 20px; font-weight: 800; color: #9a9a9a; }
+.score-middle .muted { font-size: 13px; margin-top: 4px; }
+
+/* The resident's face follows who's winning (overrides the difficulty moods) */
+#score-stage .e-mouth, #score-stage .e-eyes-dot, #score-stage .e-eyes-happy, #score-stage .e-sweat { opacity: 0; }
+#score-stage.winning .e-happy, #score-stage.winning .e-eyes-happy,
+#score-stage.losing .e-worried, #score-stage.losing .e-eyes-dot, #score-stage.losing .e-sweat { opacity: 1; }
+
+/* Insights */
+.insights ul { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 8px; }
+.insights li { font-size: 15px; line-height: 1.45; }
+.insights strong { color: #fff; }
+
+.ranks {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+}
+
 .feelings {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));

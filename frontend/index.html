@@ -92,24 +92,17 @@
 
           <svg class="elder" viewBox="0 0 160 160">
             <g class="e-body">
-              <!-- hair, cardigan, pearls -->
-              <g fill="#dcdce4">
-                <circle cx="80" cy="36" r="18"/><circle cx="52" cy="66" r="22"/><circle cx="108" cy="66" r="22"/>
-                <circle cx="64" cy="50" r="22"/><circle cx="96" cy="50" r="22"/>
-              </g>
-              <path d="M24 160 Q26 128 60 120 L100 120 Q134 128 136 160Z" fill="#8e6cc2"/>
-              <path d="M64 120 L80 138 L96 120Z" fill="#f4efe6"/>
+              <!-- everyday adult: brown hair, polo shirt -->
+              <path d="M42 92 Q36 40 80 38 Q124 40 118 92 Q112 70 80 66 Q48 70 42 92Z" fill="#4a3022"/>
+              <path d="M24 160 Q26 128 60 120 L100 120 Q134 128 136 160Z" fill="#2f8f8a"/>
               <rect x="70" y="106" width="20" height="16" fill="#f6cfa8"/>
-              <g fill="#fff">
-                <circle cx="67" cy="123" r="2.5"/><circle cx="71" cy="128" r="2.5"/><circle cx="75.5" cy="131" r="2.5"/>
-                <circle cx="80" cy="132" r="2.5"/><circle cx="84.5" cy="131" r="2.5"/><circle cx="89" cy="128" r="2.5"/>
-                <circle cx="93" cy="123" r="2.5"/>
-              </g>
+              <path d="M68 120 L80 134 L92 120Z" fill="#f6cfa8"/>
+              <path d="M60 119 L72 119 L67 131Z M100 119 L88 119 L93 131Z" fill="#e6f3f1"/>
               <circle cx="44" cy="86" r="7" fill="#f6cfa8"/><circle cx="116" cy="86" r="7" fill="#f6cfa8"/>
               <circle cx="80" cy="82" r="36" fill="#f6cfa8"/>
-              <path d="M46 72 Q52 44 80 44 Q108 44 114 72 Q100 58 80 60 Q60 58 46 72Z" fill="#e8e8ee"/>
-              <circle cx="58" cy="98" r="7" fill="#f29c9c" opacity="0.5"/>
-              <circle cx="102" cy="98" r="7" fill="#f29c9c" opacity="0.5"/>
+              <path d="M45 76 Q45 43 80 42 Q115 43 115 76 Q108 57 90 55 Q74 63 55 61 Q49 66 45 76Z" fill="#4a3022"/>
+              <circle cx="58" cy="98" r="7" fill="#f29c9c" opacity="0.3"/>
+              <circle cx="102" cy="98" r="7" fill="#f29c9c" opacity="0.3"/>
               <!-- eyes: happy arcs or dots -->
               <g class="e-eyes-happy e-line">
                 <path d="M59 87 Q65 81 71 87"/><path d="M89 87 Q95 81 101 87"/>
@@ -117,10 +110,6 @@
               <g class="e-eyes-dot" fill="#3b2a20">
                 <circle cx="65" cy="85" r="3.5"/><circle cx="95" cy="85" r="3.5"/>
               </g>
-              <g fill="#fff" fill-opacity="0.15" stroke="#6b4f3a" stroke-width="2.5">
-                <circle cx="65" cy="85" r="12"/><circle cx="95" cy="85" r="12"/>
-              </g>
-              <path class="e-line" d="M77 85 Q80 82 83 85"/>
               <path class="e-brow e-brow-l" d="M57 68 Q65 65 73 68"/>
               <path class="e-brow e-brow-r" d="M87 68 Q95 65 103 68"/>
               <path class="e-line" d="M78 92 Q80 96 82 92"/>
@@ -166,9 +155,14 @@
     <!-- 2. Ringing -->
     <section id="screen-ringing" class="screen center" hidden>
       <p class="muted">Incoming call</p>
-      <div class="avatar ringing">📞</div>
       <h2 class="caller-name">Unknown caller</h2>
       <p class="muted">mobile</p>
+      <!-- The start-screen cast, cloned in by app.js: the gator in a flimsy disguise
+           and the resident holding a buzzing phone. -->
+      <div id="ring-stage" class="stage ring-stage" data-level="1" aria-hidden="true">
+        <p id="ring-line" class="bubble"></p>
+        <div id="ring-cast" class="cast"></div>
+      </div>
       <div class="call-actions">
         <button id="btn-decline" class="round red" aria-label="Decline">✕</button>
         <button id="btn-accept" class="round green" aria-label="Accept">✓</button>
@@ -177,10 +171,15 @@
 
     <!-- 3. In call -->
     <section id="screen-call" class="screen center" hidden>
-      <div class="avatar">📞</div>
       <h2 class="caller-name">Unknown caller</h2>
       <p id="timer" class="timer">00:00</p>
-      <p id="call-status" class="muted">Connecting…</p>
+      <!-- Cloned cast (see app.js): the gator talks while the agent speaks,
+           the resident's mouth moves while you speak. -->
+      <div id="call-stage" class="stage call-stage listening" data-level="1" aria-hidden="true">
+        <div class="waves"><span></span><span></span><span></span></div>
+        <div id="call-cast" class="cast"></div>
+      </div>
+      <p id="call-status" class="muted" aria-live="polite">Connecting…</p>
       <div class="call-actions">
         <button id="btn-mute" class="round gray" aria-label="Mute">🎙</button>
         <button id="btn-hangup" class="round red" aria-label="Hang up">✕</button>
@@ -190,23 +189,34 @@
     <!-- 4. Recap -->
     <section id="screen-recap" class="screen" hidden>
       <p class="muted">This was a practice call.</p>
+
+      <!-- Ending scene (cloned cast, see app.js): class win / lose / stopped. -->
+      <div id="recap-stage" class="stage recap-stage" data-level="1" aria-hidden="true">
+        <p id="recap-line" class="bubble" hidden></p>
+        <div id="recap-cast" class="cast"></div>
+      </div>
+
       <div id="result-badge" class="badge">…</div>
       <p id="result-text"></p>
 
-      <h3>Red flags in this call</h3>
-      <ul id="flags"></ul>
+      <div id="flags-section" hidden>
+        <h3>Red flags in this call</h3>
+        <ul id="flag-chips" class="flag-chips"></ul>
+      </div>
 
-      <h3>Do</h3>
-      <ul id="dos"></ul>
-
-      <h3>Don't</h3>
-      <ul id="donts"></ul>
+      <div id="tips-section" hidden>
+        <h3>What to do next time</h3>
+        <ul id="tip-cards" class="tip-cards"></ul>
+      </div>
 
       <p class="muted">Got a real scam call? Report it at
         <a href="https://reportfraud.ftc.gov" target="_blank" rel="noopener">ReportFraud.ftc.gov</a>.
       </p>
 
-      <button id="btn-again" class="btn primary">Try another call</button>
+      <div class="next-steps">
+        <button id="btn-again" class="btn primary">Try another scenario</button>
+        <a href="dashboard.html" class="btn secondary">See how others did →</a>
+      </div>
     </section>
 
   </main>

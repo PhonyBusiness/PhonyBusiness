@@ -1,5 +1,5 @@
 /* Start-screen mascots. The gator's mood follows #stage[data-level] (0 = suspicious,
-   3 = full evil grin); the elder and the page theme follow body[data-difficulty]. */
+   3 = full evil grin); the resident and the page theme follow body[data-difficulty]. */
 
 .stage {
   position: relative;
@@ -109,10 +109,10 @@
   75%           { opacity: 1; transform: scale(1) rotate(45deg); }
 }
 
-/* ---------- Elder ---------- */
+/* ---------- Resident (everyday adult) ---------- */
 
 .e-line { fill: none; stroke: #3b2a20; stroke-width: 3; stroke-linecap: round; }
-.e-brow { fill: none; stroke: #b8b8c4; stroke-width: 3.5; stroke-linecap: round; transform-box: fill-box; transform-origin: center; transition: transform 0.35s; }
+.e-brow { fill: none; stroke: #4a3022; stroke-width: 3.5; stroke-linecap: round; transform-box: fill-box; transform-origin: center; transition: transform 0.35s; }
 .e-mouth, .e-eyes-happy, .e-eyes-dot, .e-sweat { opacity: 0; transition: opacity 0.25s; }
 .e-sweat { fill: #7cc6ff; }
 .e-eyes-dot { transform-box: fill-box; transform-origin: center; animation: blink 4s infinite; }
@@ -191,6 +191,125 @@ body[data-difficulty="hard"] select { border-color: rgba(255, 60, 60, 0.45); }
   60%      { transform: translateX(-4px); }
   80%      { transform: translateX(4px); }
 }
+
+/* ---------- Ringing screen ---------- */
+
+.ring-stage { width: 100%; margin-top: 12px; text-align: left; }
+.ring-stage + .call-actions { margin-top: 40px; }
+
+/* Gator's disguise: official cap with a badge, and a fake mustache */
+.g-cap { fill: #1f2d4a; }
+.g-cap-brim { fill: #15203a; }
+.g-badge { fill: #f6d44a; stroke: #b8901c; stroke-width: 1; }
+.g-stache { fill: #2a1a10; }
+
+/* Resident's phone buzzes while the call rings */
+.e-phone { transform-box: fill-box; transform-origin: 50% 100%; animation: buzz 0.4s ease-in-out infinite; }
+.e-buzz { fill: none; stroke: #9fd3ff; stroke-width: 2.5; stroke-linecap: round; animation: buzz-fade 0.8s ease-in-out infinite; }
+@keyframes buzz {
+  0%, 100% { transform: rotate(0deg); }
+  25%      { transform: rotate(-7deg); }
+  75%      { transform: rotate(7deg); }
+}
+@keyframes buzz-fade {
+  0%, 100% { opacity: 0.2; }
+  50%      { opacity: 1; }
+}
+
+/* ---------- In-call screen ---------- */
+
+.call-stage { width: 100%; margin-top: 8px; }
+.call-stage + #call-status { margin-top: 4px; }
+#call-stage .e-phone { animation: none; }
+
+/* Sound waves above the gator while the agent is speaking */
+.waves {
+  position: absolute;
+  left: 38%;
+  top: 16px;
+  display: flex;
+  align-items: flex-end;
+  gap: 3px;
+  height: 20px;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.waves span {
+  width: 4px;
+  height: 100%;
+  border-radius: 2px;
+  background: #f5f5f5;
+  transform-origin: bottom;
+  animation: wave 0.45s ease-in-out infinite alternate;
+}
+.waves span:nth-child(2) { animation-delay: 0.15s; }
+.waves span:nth-child(3) { animation-delay: 0.3s; }
+.call-stage.talking .waves { opacity: 1; }
+@keyframes wave {
+  from { transform: scaleY(0.3); }
+  to   { transform: scaleY(1); }
+}
+
+/* Gator talking: toothy mouth (level 2) opening and closing */
+.call-stage.talking .m2 {
+  transform-box: fill-box;
+  transform-origin: 50% 0;
+  animation: jaw 0.22s ease-in-out infinite alternate;
+}
+@keyframes jaw {
+  from { transform: scaleY(0.35); }
+  to   { transform: scaleY(1); }
+}
+
+/* Gator listening: leans in with shifty eyes */
+.call-stage.listening .g-head { transform: rotate(5deg) translateX(3px); }
+.call-stage.listening .g-pupil { animation: shifty 2.4s ease-in-out infinite; }
+
+/* Resident: talking mouth while you speak, zipped mouth while muted */
+.e-talk, .e-zip { opacity: 0; transition: opacity 0.15s; }
+.e-talk { fill: #7a2e2e; stroke: #3b2a20; stroke-width: 2; transform-box: fill-box; transform-origin: center; }
+#call-stage.user-talking .e-mouth,
+#call-stage.muted .e-mouth { opacity: 0; }
+#call-stage.user-talking .e-talk { opacity: 1; animation: jaw 0.2s ease-in-out infinite alternate; }
+#call-stage.muted .e-zip { opacity: 1; }
+
+/* ---------- Recap: ending scene ---------- */
+
+.recap-stage { margin-top: 4px; }
+#recap-stage .e-phone { display: none; }
+#recap-stage .e-body { animation: breathe 3s ease-in-out infinite; }
+
+/* Resident's face is set by the result, not the difficulty */
+#recap-stage.win .e-mouth, #recap-stage.win .e-eyes-dot, #recap-stage.win .e-sweat,
+#recap-stage.lose .e-mouth, #recap-stage.lose .e-eyes-happy,
+#recap-stage.stopped .e-mouth, #recap-stage.stopped .e-eyes-happy, #recap-stage.stopped .e-sweat { opacity: 0; }
+#recap-stage.win .e-happy, #recap-stage.win .e-eyes-happy,
+#recap-stage.lose .e-worried, #recap-stage.lose .e-eyes-dot, #recap-stage.lose .e-sweat,
+#recap-stage.stopped .e-happy, #recap-stage.stopped .e-eyes-dot { opacity: 1; }
+
+/* Pass: resident hops for joy; the disguise falls off and the gator slinks away */
+#recap-stage.win .e-body { animation: hop 0.5s ease-in-out 0.2s 3; }
+#recap-stage.win .g-cap,
+#recap-stage.win .g-cap-brim,
+#recap-stage.win .g-badge { transform-box: fill-box; transform-origin: center; animation: cap-fall 0.9s ease-in 0.4s forwards; }
+#recap-stage.win .g-stache { transform-box: fill-box; transform-origin: 0 0; animation: stache-peel 0.7s ease-in 0.9s forwards; }
+#recap-stage.win .gator { animation: slink 1s ease-in-out 1.3s forwards; }
+@keyframes hop {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-10px); }
+}
+@keyframes cap-fall {
+  to { transform: translate(-24px, 90px) rotate(-70deg); opacity: 0; }
+}
+@keyframes stache-peel {
+  to { transform: translateY(40px) rotate(35deg); opacity: 0; }
+}
+@keyframes slink {
+  to { transform: translateX(-10%) scale(0.92); opacity: 0.6; }
+}
+
+/* Fail: resident is stunned */
+#recap-stage.lose .e-body { animation: tremble 0.15s linear 6; }
 
 @media (prefers-reduced-motion: reduce) {
   .stage *, .stage, body::after { animation: none !important; }
