@@ -280,14 +280,21 @@ For the agent's behavior, `ElevenLabsSetup.md` includes a test matrix covering p
 ## Deployment
 
 - **Frontend:** pushing changes under `frontend/` to `main` deploys to GitHub Pages at [phonybusiness.study](https://phonybusiness.study) via `.github/workflows/pages.yml`. Point `API` in `app.js` and `dashboard.js` at the deployed backend first.
-- **Backend:** build the Docker image and run it anywhere that provides a `PORT`:
+- **Backend:** deployed on DigitalOcean App Platform, built from the `Dockerfile`. To deploy:
+
+1. **Apps → Create App → GitHub**, select the repo/branch.
+2. Add `.env.example`'s variables under Environment Variables.
+3. **Set the health check path to `/health`.**
+4. Update the ElevenLabs tool/webhook URLs to the deployed URL.
+
+The image includes `scripts/voices/voices.json`, so per-scenario voices work in production.
+
+To build and run the image locally first:
 
 ```sh
 docker build -t phonybusiness .
 docker run --env-file .env -p 8080:8080 phonybusiness
 ```
-
-The image includes `scripts/voices/voices.json`, so per-scenario voices work in production. After deploying, update the tool and webhook URLs in ElevenLabs to the production backend.
 
 ## What's next
 
